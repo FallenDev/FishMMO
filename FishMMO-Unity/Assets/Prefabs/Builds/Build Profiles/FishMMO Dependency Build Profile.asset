@@ -19,10 +19,10 @@ MonoBehaviour:
   LogOutput: "Starting all builds...\n--- Starting Build for: FishMMO Logger Build
     Settings ---\nPerforming clean for 'FishMMO Logger Build Settings'...\nExecuting:
     dotnet clean \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Logger\\FishMMO-Logger\\FishMMO-Logger.csproj\"
-    --configuration Release --framework netstandard2.1\nBuild started 10/12/2025
-    9:53:52 PM.\r\n     1>Project \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Logger\\FishMMO-Logger\\FishMMO-Logger.csproj\"
+    --configuration Release --framework netstandard2.1\nBuild started 10/20/2025
+    12:38:38 PM.\r\n     1>Project \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Logger\\FishMMO-Logger\\FishMMO-Logger.csproj\"
     on node 1 (Clean target(s)).\r\n     1>_CheckForNETCoreSdkIsPreview:\r\n      
-    C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(345,5):
+    C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(351,5):
     message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
     [Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Logger\\FishMMO-Logger\\FishMMO-Logger.csproj]\r\n      
     CoreClean:\r\n         Deleting file \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Logger\\FishMMO-Logger\\obj\\Release\\netstandard2.1\\FishMMO-Logger.csproj.AssemblyReference.cache\".\r\n        
@@ -35,21 +35,22 @@ MonoBehaviour:
     Deleting file \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Logger\\FishMMO-Logger\\obj\\Release\\netstandard2.1\\FishMMO-Logger.pdb\".\r\n    
     1>Done Building Project \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Logger\\FishMMO-Logger\\FishMMO-Logger.csproj\"
     (Clean target(s)).\r\n\r\nBuild succeeded.\r\n    0 Warning(s)\r\n    0 Error(s)\r\n\r\nTime
-    Elapsed 00:00:00.24\r\n\nClean for 'FishMMO Logger Build Settings' completed
+    Elapsed 00:00:00.32\r\n\nClean for 'FishMMO Logger Build Settings' completed
     successfully.\nExecuting: dotnet build \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Logger\\FishMMO-Logger\\FishMMO-Logger.csproj\"
     --configuration Release --framework netstandard2.1\n  Determining projects to
-    restore...\r\n  All projects are up-to-date for restore.\r\nC:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(345,5):
+    restore...\r\n  Restored Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Logger\\FishMMO-Logger\\FishMMO-Logger.csproj
+    (in 353 ms).\r\nC:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(351,5):
     message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
     [Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Logger\\FishMMO-Logger\\FishMMO-Logger.csproj]\r\n 
     FishMMO-Logger -> Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Logger\\FishMMO-Logger\\bin\\Release\\netstandard2.1\\FishMMO-Logger.dll\r\n\r\nBuild
-    succeeded.\r\n    0 Warning(s)\r\n    0 Error(s)\r\n\r\nTime Elapsed 00:00:00.96\r\n\nBuild
+    succeeded.\r\n    0 Warning(s)\r\n    0 Error(s)\r\n\r\nTime Elapsed 00:00:01.19\r\n\nBuild
     for 'FishMMO Logger Build Settings' completed successfully!\n\n\n--- Starting
     Build for: FishMMO Dependencies Build Settings ---\nPerforming clean for 'FishMMO
     Dependencies Build Settings'...\nExecuting: dotnet clean \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Dependencies\\FishMMO-Dependencies.csproj\"
-    --configuration Release --framework netstandard2.1\nBuild started 10/12/2025
-    9:53:54 PM.\r\n     1>Project \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Dependencies\\FishMMO-Dependencies.csproj\"
+    --configuration Release --framework netstandard2.1\nBuild started 10/20/2025
+    12:38:40 PM.\r\n     1>Project \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Dependencies\\FishMMO-Dependencies.csproj\"
     on node 1 (Clean target(s)).\r\n     1>_CheckForNETCoreSdkIsPreview:\r\n      
-    C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(345,5):
+    C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(351,5):
     message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
     [Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Dependencies\\FishMMO-Dependencies.csproj]\r\n      
     CoreClean:\r\n         Deleting file \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\FishMMO-Dependencies.deps.json\".\r\n        
@@ -169,18 +170,19 @@ MonoBehaviour:
     Elapsed 00:00:00.30\r\n\nClean for 'FishMMO Dependencies Build Settings' completed
     successfully.\nExecuting: dotnet build \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Dependencies\\FishMMO-Dependencies.csproj\"
     --configuration Release --framework netstandard2.1\n  Determining projects to
-    restore...\r\n  All projects are up-to-date for restore.\r\nC:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(345,5):
+    restore...\r\n  Restored Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Dependencies\\FishMMO-Dependencies.csproj
+    (in 276 ms).\r\nC:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(351,5):
     message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
     [Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Dependencies\\FishMMO-Dependencies.csproj]\r\n 
     FishMMO-Dependencies -> Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\FishMMO-Dependencies.dll\r\n\r\nBuild
-    succeeded.\r\n    0 Warning(s)\r\n    0 Error(s)\r\n\r\nTime Elapsed 00:00:00.46\r\n\nBuild
+    succeeded.\r\n    0 Warning(s)\r\n    0 Error(s)\r\n\r\nTime Elapsed 00:00:00.48\r\n\nBuild
     for 'FishMMO Dependencies Build Settings' completed successfully!\n\n\n--- Starting
     Build for: FishMMO Database Build Settings ---\nPerforming clean for 'FishMMO
     Database Build Settings'...\nExecuting: dotnet clean \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB-Migrator\\FishMMO-DB-Migrator.csproj\"
-    --configuration Release --framework net8.0\nBuild started 10/12/2025 9:53:55
+    --configuration Release --framework net8.0\nBuild started 10/20/2025 12:38:42
     PM.\r\n     1>Project \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB-Migrator\\FishMMO-DB-Migrator.csproj\"
     on node 1 (Clean target(s)).\r\n     1>_CheckForNETCoreSdkIsPreview:\r\n      
-    C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(345,5):
+    C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(351,5):
     message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
     [Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB-Migrator\\FishMMO-DB-Migrator.csproj]\r\n      
     CoreClean:\r\n         Deleting file \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\FishMMO-DB-Migrator.exe\".\r\n        
@@ -245,14 +247,16 @@ MonoBehaviour:
     2>Done Building Project \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB\\FishMMO-DB.csproj\"
     (Clean target(s)).\r\n     1>Done Building Project \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB-Migrator\\FishMMO-DB-Migrator.csproj\"
     (Clean target(s)).\r\n\r\nBuild succeeded.\r\n    0 Warning(s)\r\n    0 Error(s)\r\n\r\nTime
-    Elapsed 00:00:00.32\r\n\nClean for 'FishMMO Database Build Settings' completed
+    Elapsed 00:00:00.31\r\n\nClean for 'FishMMO Database Build Settings' completed
     successfully.\nExecuting: dotnet build \"Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB-Migrator\\FishMMO-DB-Migrator.csproj\"
     --configuration Release --framework net8.0\n  Determining projects to restore...\r\n 
-    All projects are up-to-date for restore.\r\nC:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(345,5):
+    Restored Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB-Migrator\\FishMMO-DB-Migrator.csproj
+    (in 185 ms).\r\n  Restored Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB\\FishMMO-DB.csproj
+    (in 185 ms).\r\nC:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.NET.RuntimeIdentifierInference.targets(351,5):
     message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy
     [Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB-Migrator\\FishMMO-DB-Migrator.csproj]\r\n 
     FishMMO-DB -> Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB\\bin\\Release\\netstandard2.1\\FishMMO-DB.dll\r\n 
     FishMMO-DB-Migrator -> Y:\\Unity\\FishMMO\\FishMMO\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\FishMMO-DB-Migrator.dll\r\n\r\nBuild
-    succeeded.\r\n    0 Warning(s)\r\n    0 Error(s)\r\n\r\nTime Elapsed 00:00:01.31\r\n\nBuild
+    succeeded.\r\n    0 Warning(s)\r\n    0 Error(s)\r\n\r\nTime Elapsed 00:00:01.18\r\n\nBuild
     for 'FishMMO Database Build Settings' completed successfully!\n\n\n\nAll requested
     builds finished. Refreshing Unity AssetDatabase...\nUnity AssetDatabase refreshed.\n"
