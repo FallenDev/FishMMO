@@ -42,7 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -289,8 +290,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6265c32a755fc941923340579f96fb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpdatePumpRate: 5
-  UpdateFetchCount: 100
+  updatePumpRate: 5
+  updateFetchCount: 100
 --- !u!1 &2696072683140574242
 GameObject:
   m_ObjectHideFlags: 0
