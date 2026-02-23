@@ -10,9 +10,14 @@ namespace FishMMO.Database
 	public class AppSettings
 	{
 		/// <summary>
-		/// Gets or sets PostgreSQL connection settings.
+		/// Gets or sets common database provider selection settings.
 		/// </summary>
-		public NpgsqlSettings Npgsql { get; set; } = new();
+		public DatabaseSettings Database { get; set; } = new();
+
+		/// <summary>
+		/// Gets or sets SQL Server connection settings.
+		/// </summary>
+		public SqlServerSettings SqlServer { get; set; } = new();
 
 		/// <summary>
 		/// Gets or sets Redis connection settings.
@@ -21,69 +26,33 @@ namespace FishMMO.Database
 	}
 
 	/// <summary>
-	/// PostgreSQL connection settings.
+	/// Common database settings.
 	/// </summary>
 	[Serializable]
-	public class NpgsqlSettings
+	public class DatabaseSettings
 	{
 		/// <summary>
-		/// Gets or sets the PostgreSQL host.
+		/// Gets or sets the active database provider.
 		/// </summary>
-		public string Host { get; set; } = "127.0.0.1";
+		public string Provider { get; set; } = nameof(DatabaseProvider.SqlServer);
+	}
 
-		/// <summary>
-		/// Gets or sets the PostgreSQL port.
-		/// </summary>
-		public string Port { get; set; } = "5432";
-
-		/// <summary>
-		/// Gets or sets the PostgreSQL database name.
-		/// </summary>
-		public string Database { get; set; } = "fish_mmo_postgresql";
-
-		/// <summary>
-		/// Gets or sets the database schema name.
-		/// </summary>
-		public string Schema { get; set; } = "public";
-
-		/// <summary>
-		/// Gets or sets the database username.
-		/// </summary>
-		public string Username { get; set; } = "user";
-
-		/// <summary>
-		/// Gets or sets the database password.
-		/// </summary>
+	/// <summary>
+	/// SQL Server connection settings.
+	/// </summary>
+	[Serializable]
+	public class SqlServerSettings
+	{
+		public string Server { get; set; } = "127.0.0.1,1433";
+		public string Database { get; set; } = "fish_mmo_sqlserver";
+		public string Username { get; set; } = "sa";
 		public string Password { get; set; } = "pass";
-
-		/// <summary>
-		/// Gets or sets the command timeout in seconds.
-		/// </summary>
+		public bool TrustServerCertificate { get; set; } = true;
 		public int CommandTimeout { get; set; } = 10;
-
-		/// <summary>
-		/// Gets or sets the connection timeout in seconds.
-		/// </summary>
 		public int ConnectionTimeout { get; set; } = 15;
-
-		/// <summary>
-		/// Gets or sets the minimum connection pool size.
-		/// </summary>
 		public int MinPoolSize { get; set; } = 5;
-
-		/// <summary>
-		/// Gets or sets the maximum connection pool size.
-		/// </summary>
 		public int MaxPoolSize { get; set; } = 100;
-
-		/// <summary>
-		/// Gets or sets query performance tracking configuration.
-		/// </summary>
 		public QueryPerformanceConfiguration QueryPerformanceTracking { get; set; } = new();
-
-		/// <summary>
-		/// Gets or sets the retry policy configuration for transient failure handling.
-		/// </summary>
 		public RetryPolicyConfiguration RetryPolicy { get; set; } = new();
 	}
 

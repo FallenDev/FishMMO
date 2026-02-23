@@ -9,12 +9,12 @@ namespace FishMMO.Installer
 		/// <summary>
 		/// Download URL for the DotNet SDK Windows installer.
 		/// </summary>
-		public const string DotNetSDKUrl = "https://download.visualstudio.microsoft.com/download/pr/b6f19ef3-52ca-40b1-b78b-0712d3c8bf4d/426bd0d376479d551ce4d5ac0ecf63a5/dotnet-sdk-8.0.302-win-x64.exe";
+		public const string DotNetSDKUrl = "https://aka.ms/dotnet/10.0/dotnet-sdk-win-x64.exe";
 
 		/// <summary>
 		/// Filename for the downloaded DotNet SDK Windows installer.
 		/// </summary>
-		public const string DotNetSDKFileName = "dotnet-sdk-8.0.302-win-x64.exe";
+		public const string DotNetSDKFileName = "dotnet-sdk-10.0-win-x64.exe";
 
 		/// <summary>
 		/// URL for the DotNet install shell script (Linux).
@@ -29,47 +29,17 @@ namespace FishMMO.Installer
 		/// <summary>
 		/// Full DotNet SDK version string to install.
 		/// </summary>
-		public const string DotNetSDKVersion = "8.0.302";
+		public const string DotNetSDKVersion = "10.0.100";
 
 		/// <summary>
 		/// DotNet SDK major version for compatibility checks.
 		/// </summary>
-		public const string DotNetSDKMajorVersion = "8.0";
+		public const string DotNetSDKMajorVersion = "10.0";
 
 		/// <summary>
 		/// DotNet Entity Framework tool version to install.
 		/// </summary>
 		public const string DotNetEFVersion = "5.0.17";
-
-		/// <summary>
-		/// Download URL for the PostgreSQL Windows installer.
-		/// </summary>
-		public const string PostgreSQLWindowsInstallerUrl = @"https://sbp.enterprisedb.com/getfile.jsp?fileid=1259105";
-
-		/// <summary>
-		/// Filename for the downloaded PostgreSQL Windows installer.
-		/// </summary>
-		public const string PostgreSQLWindowsInstallerFileName = "PostgreSQLInstaller.exe";
-
-		/// <summary>
-		/// Default PostgreSQL superuser account name.
-		/// </summary>
-		public const string PostgreSQLDefaultSuperuser = "postgres";
-
-		/// <summary>
-		/// Default PostgreSQL administrative database name.
-		/// </summary>
-		public const string PostgreSQLDefaultAdminDb = "postgres";
-
-		/// <summary>
-		/// Default PgBouncer listen port.
-		/// </summary>
-		public const string PgBouncerDefaultPort = "6432";
-
-		/// <summary>
-		/// Default Linux systemd service name for PgBouncer.
-		/// </summary>
-		public const string PgBouncerLinuxServiceName = "pgbouncer";
 
 		/// <summary>
 		/// Download URL for the NGINX Windows zip archive.

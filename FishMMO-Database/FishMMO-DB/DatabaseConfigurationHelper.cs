@@ -33,6 +33,17 @@ namespace FishMMO.Database
 #endif
 		}
 
+
+		/// <summary>
+		/// Resolves the configured database provider.
+		/// SQL Server is the only supported provider.
+		/// </summary>
+		public static DatabaseProvider ResolveDatabaseProvider(IConfiguration configuration)
+		{
+			if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+			return DatabaseProvider.SqlServer;
+		}
+
 		/// <summary>
 		/// Builds an <see cref="IConfiguration"/> instance suitable for design-time (EF Core tools).
 		/// Loads <c>appsettings.json</c>, an optional environment-specific file and environment variables

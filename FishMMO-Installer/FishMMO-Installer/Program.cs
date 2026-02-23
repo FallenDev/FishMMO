@@ -4,49 +4,32 @@ using Microsoft.Extensions.Configuration;
 namespace FishMMO.Installer
 {
 	/// <summary>
-	/// Console-based installer tool for FishMMO dependencies and database setup.
-	/// Delegates all work to focused installer classes: <see cref="DotNetInstaller"/>,
-	/// <see cref="PgBouncerInstaller"/>,
-	/// <see cref="PostgreSQLInstaller"/>, <see cref="NGINXInstaller"/>,
-	/// <see cref="VSBuildToolsInstaller"/>, <see cref="UnityInstaller"/>, <see cref="LetsEncryptInstaller"/>,
-	/// and <see cref="ProjectBuildInstaller"/>.
+	/// Console-based installer tool for FishMMO dependencies and SQL Server database setup.
 	/// </summary>
 	public static class Program
 	{
-		/// <summary>
-		/// Stores the loaded application settings from appsettings.json.
-		/// </summary>
 		private static AppSettings appSettings = new AppSettings();
 
-		/// <summary>
-		/// Entry point. Loads appsettings.json and runs the installer menu loop.
-		/// </summary>
 		public static async Task Main(string[] args)
 		{
-			// Normalize environment selection once and propagate to standard variables.
 			string environmentName = DatabaseConfigurationHelper.ResolveEnvironmentName();
 
 			Environment.SetEnvironmentVariable("FISHMMO_ENVIRONMENT", environmentName);
 			Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", environmentName);
 			Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", environmentName);
+			Environment.SetEnvironmentVariable("Database__Provider", nameof(DatabaseProvider.SqlServer));
 
 			LoadAppSettings(environmentName);
 			await RunMenuLoop();
 		}
 
-		/// <summary>
-		/// Loads application settings using ConfigurationBuilder.
-		/// appsettings.json is treated as the default source and optional
-		/// appsettings.{Environment}.json overlays values when an environment is provided.
-		/// </summary>
 		private static void LoadAppSettings(string environmentName)
 		{
 			try
 			{
 				IConfiguration configuration = DatabaseConfigurationHelper.BuildDesignTimeConfiguration();
-
 				appSettings = configuration.Get<AppSettings>() ?? new AppSettings();
-
+				appSettings.Database.Provider = nameof(DatabaseProvider.SqlServer);
 				InstallerProcessHelper.Log($"Configuration successfully loaded for Environment: {environmentName}");
 			}
 			catch (Exception ex)
@@ -56,33 +39,27 @@ namespace FishMMO.Installer
 			}
 		}
 
-		/// <summary>
-		/// Runs the interactive console menu loop until the user quits.
-		/// </summary>
 		private static async Task RunMenuLoop()
 		{
 			while (true)
 			{
 				Console.Clear();
-				Console.WriteLine("Welcome to the FishMMO Installer Tool.");
-				Console.WriteLine("Press a key (0-9, A-D):");
+				Console.WriteLine("Welcome to the FishMMO Installer Tool (SQL Server mode).");
+				Console.WriteLine("Press a key (0-9, A-B):");
 				Console.WriteLine("1 : Install DotNet");
 				Console.WriteLine("2 : Install Visual Studio Build Tools (Windows Only)");
-				Console.WriteLine("3 : Install PgBouncer (Connection Pooler)");
-				Console.WriteLine("4 : Build all C# Projects");
-				Console.WriteLine("5 : Install Unity Hub");
-				Console.WriteLine("6 : Install Unity Editor (+Modules)");
-				Console.WriteLine("7 : Install NGINX (Web Server/Reverse Proxy)");
-				Console.WriteLine("8 : Install/Renew Let's Encrypt Certificate (NGINX)");
-				Console.WriteLine("9 : Install PostgreSQL (Database Server)");
-				Console.WriteLine("A : Install FishMMO Database (User/Schema/Initial Migration)");
-				Console.WriteLine("B : Create new database migration");
-				Console.WriteLine("C : Grant User Permissions on Database");
-				Console.WriteLine("D : Delete FishMMO Database (DANGEROUS!)");
+				Console.WriteLine("3 : Build all C# Projects");
+				Console.WriteLine("4 : Install Unity Hub");
+				Console.WriteLine("5 : Install Unity Editor (+Modules)");
+				Console.WriteLine("6 : Install NGINX (Web Server/Reverse Proxy)");
+				Console.WriteLine("7 : Install/Renew Let's Encrypt Certificate (NGINX)");
+				Console.WriteLine("8 : Validate SQL Server connectivity");
+				Console.WriteLine("9 : Provision FishMMO SQL Server Database");
+				Console.WriteLine("A : Create new database migration");
+				Console.WriteLine("B : Apply pending migrations");
 				Console.WriteLine("0 : Quit");
 
 				ConsoleKeyInfo key = Console.ReadKey(true);
-
 				switch (key.Key)
 				{
 					case ConsoleKey.D1:
@@ -92,49 +69,31 @@ namespace FishMMO.Installer
 						await VSBuildToolsInstaller.InstallVSBuildTools();
 						break;
 					case ConsoleKey.D3:
-						await PgBouncerInstaller.InstallPgBouncer(appSettings);
-						break;
-					case ConsoleKey.D4:
 						await ProjectBuildInstaller.BuildAllProjectsInSelectedRootAsync();
 						break;
-					case ConsoleKey.D5:
+					case ConsoleKey.D4:
 						await UnityInstaller.InstallUnityHub();
 						break;
-					case ConsoleKey.D6:
+					case ConsoleKey.D5:
 						await UnityInstaller.InstallUnityVersion();
 						break;
-					case ConsoleKey.D7:
+					case ConsoleKey.D6:
 						await NGINXInstaller.InstallNGINX();
 						break;
-					case ConsoleKey.D8:
+					case ConsoleKey.D7:
 						await LetsEncryptInstaller.InstallLetsEncryptCertificate();
 						break;
+					case ConsoleKey.D8:
+						await HandleWithSettings(s => s.SqlServer?.Server, "SqlServer server", SqlServerInstaller.InstallSqlServer);
+						break;
 					case ConsoleKey.D9:
-						await HandleWithSettings(
-							s => s.Npgsql?.Host,
-							"Npgsql host",
-							s => PostgreSQLInstaller.InstallPostgreSQL(s));
+						await HandleWithSettings(s => s.SqlServer?.Database, "SqlServer database", SqlServerInstaller.InstallFishMMODatabase);
 						break;
 					case ConsoleKey.A:
-						await HandleWithSuperuser(
-							s => s.Npgsql?.Database,
-							"Npgsql database",
-							PostgreSQLInstaller.InstallFishMMODatabase);
+						await CreateMigration();
 						break;
 					case ConsoleKey.B:
-						await PostgreSQLInstaller.CreateMigration();
-						break;
-					case ConsoleKey.C:
-						await HandleWithSuperuser(
-							s => s.Npgsql?.Username,
-							"Npgsql database/username",
-							PostgreSQLInstaller.GrantUserPermissions);
-						break;
-					case ConsoleKey.D:
-						await HandleWithSuperuser(
-							s => s.Npgsql?.Database,
-							"Npgsql database",
-							PostgreSQLInstaller.DeleteFishMMODatabase);
+						await ApplyMigrations();
 						break;
 					case ConsoleKey.D0:
 						return;
@@ -148,12 +107,31 @@ namespace FishMMO.Installer
 			}
 		}
 
-		/// <summary>
-		/// Validates that the required Npgsql setting is present, then delegates to the handler.
-		/// </summary>
-		/// <param name="requiredField">Selector for the required field to validate.</param>
-		/// <param name="fieldDescription">Human-readable name of the required field for error messages.</param>
-		/// <param name="handler">Async action receiving the validated app settings.</param>
+		private static async Task CreateMigration()
+		{
+			string? migrationName = InstallerProcessHelper.PromptForInput("Enter a name for the new migration (e.g., 'AddPlayerInventory'): ");
+			if (string.IsNullOrWhiteSpace(migrationName))
+			{
+				InstallerProcessHelper.Log("Migration name cannot be empty.");
+				return;
+			}
+
+			bool migrationSuccess = await DotNetInstaller.RunEFMigrationAsync(migrationName);
+			if (!migrationSuccess)
+			{
+				InstallerProcessHelper.Log($"Failed to create migration '{migrationName}'.");
+				return;
+			}
+
+			InstallerProcessHelper.Log($"Migration '{migrationName}' created successfully.");
+		}
+
+		private static async Task ApplyMigrations()
+		{
+			bool updateSuccess = await DotNetInstaller.RunEFDatabaseUpdateAsync();
+			InstallerProcessHelper.Log(updateSuccess ? "Migrations applied successfully." : "Failed to apply migrations.");
+		}
+
 		private static async Task HandleWithSettings(
 			Func<AppSettings, string?> requiredField,
 			string fieldDescription,
@@ -165,27 +143,6 @@ namespace FishMMO.Installer
 				return;
 			}
 			await handler(appSettings);
-		}
-
-		/// <summary>
-		/// Validates settings, prompts for superuser credentials, then delegates to the handler.
-		/// </summary>
-		/// <param name="requiredField">Selector for the required field to validate.</param>
-		/// <param name="fieldDescription">Human-readable name of the required field for error messages.</param>
-		/// <param name="handler">Async action receiving (superUsername, superPassword, appSettings).</param>
-		private static async Task HandleWithSuperuser(
-			Func<AppSettings, string?> requiredField,
-			string fieldDescription,
-			Func<string, string, AppSettings, Task> handler)
-		{
-			if (string.IsNullOrWhiteSpace(requiredField(appSettings)))
-			{
-				InstallerProcessHelper.Log($"appsettings.json is not loaded or {fieldDescription} is not defined. Cannot proceed without configuration.");
-				return;
-			}
-			string superUsername = InstallationConstants.PostgreSQLDefaultSuperuser;
-			string superPassword = InstallerProcessHelper.PromptForPassword($"Enter PostgreSQL Superuser Password (username is '{superUsername}'): ");
-			await handler(superUsername, superPassword, appSettings);
 		}
 	}
 }

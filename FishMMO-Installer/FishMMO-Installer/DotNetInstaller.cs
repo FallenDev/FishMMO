@@ -20,7 +20,7 @@ namespace FishMMO.Installer
 
 			if (!await IsDotNetInstalledAsync())
 			{
-				if (InstallerProcessHelper.PromptForYesNo("DotNet 8 is not installed, would you like to install it?"))
+				if (InstallerProcessHelper.PromptForYesNo("DotNet 10 is not installed, would you like to install it?"))
 				{
 					InstallerProcessHelper.Log("Installing DotNet...");
 					await DownloadAndInstallDotNetAsync();
@@ -73,7 +73,7 @@ namespace FishMMO.Installer
 			{
 				if (e != 0) return false;
 
-				// Each line looks like: "8.0.302 [/usr/share/dotnet/sdk]"
+				// Each line looks like: "10.0.100 [/usr/share/dotnet/sdk]"
 				using var reader = new StringReader(o);
 				string? line;
 				while ((line = reader.ReadLine()) != null)
@@ -235,8 +235,11 @@ namespace FishMMO.Installer
 				return false;
 			}
 
+			const string providerArg = "SqlServer";
+			const string outputDir = "SqlServerMigrations";
+
 			return await RunDotNetCommandAsync(
-				$"ef migrations add {migrationName} -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\"");
+				$"ef migrations add {migrationName} -o {outputDir} -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
 		}
 
 		/// <summary>
@@ -245,8 +248,10 @@ namespace FishMMO.Installer
 		/// <returns>True if the command succeeded, otherwise false.</returns>
 		public static async Task<bool> RunEFDatabaseUpdateAsync()
 		{
+			const string providerArg = "SqlServer";
+
 			return await RunDotNetCommandAsync(
-				$"ef database update -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\"");
+				$"ef database update -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
 		}
 	}
 }

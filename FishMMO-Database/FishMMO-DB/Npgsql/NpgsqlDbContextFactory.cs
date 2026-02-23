@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Npgsql;
 using FishMMO.Database.Npgsql.Monitoring.Metrics;
 using FishMMO.Database.Npgsql.Monitoring.Diagnostics;
+using FishMMO.Database.SqlServer;
 
 namespace FishMMO.Database.Npgsql
 {
@@ -32,6 +33,8 @@ namespace FishMMO.Database.Npgsql
 		private int shutdown;
 		private int activeContextCount;
 		private readonly NpgsqlDbConfiguration configuration;
+		private readonly SqlServerDbConfiguration sqlServerConfiguration;
+		private readonly string schemaName;
 		private readonly DbContextOptions<NpgsqlDbContext> cachedOptions;
 		private readonly ConnectionPoolMetrics poolMetrics;
 		private readonly QueryPerformanceTracker performanceTracker;
@@ -51,7 +54,7 @@ namespace FishMMO.Database.Npgsql
 		/// <param name="configuration">Configuration root containing an <c>Npgsql</c> section.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="configuration"/> is <c>null</c>.</exception>
 		public NpgsqlDbContextFactory(IConfiguration configuration)
-			: this(new NpgsqlDbConfiguration(configuration))
+			: this(configuration, false, null)
 		{
 		}
 
@@ -62,7 +65,7 @@ namespace FishMMO.Database.Npgsql
 		/// <param name="enableLogging">Enable sensitive data logging for development.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="configuration"/> is <c>null</c>.</exception>
 		public NpgsqlDbContextFactory(IConfiguration configuration, bool enableLogging)
-			: this(new NpgsqlDbConfiguration(configuration, enableLogging))
+			: this(configuration, enableLogging, null)
 		{
 		}
 
@@ -74,8 +77,60 @@ namespace FishMMO.Database.Npgsql
 		/// <param name="commandTimeout">Command timeout in seconds (overrides config file value).</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="configuration"/> is <c>null</c>.</exception>
 		public NpgsqlDbContextFactory(IConfiguration configuration, bool enableLogging, int commandTimeout)
-			: this(new NpgsqlDbConfiguration(configuration, enableLogging, commandTimeout))
+			: this(configuration, enableLogging, (int?)commandTimeout)
 		{
+		}
+
+		private NpgsqlDbContextFactory(IConfiguration configuration, bool enableLogging, int? commandTimeout)
+		{
+			if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+			poolMetrics = new ConnectionPoolMetrics();
+			var connectionMetricsInterceptor = new ConnectionMetricsInterceptor(poolMetrics);
+
+			if (DatabaseConfigurationHelper.ResolveDatabaseProvider(configuration) == DatabaseProvider.SqlServer)
+			{
+				sqlServerConfiguration = new SqlServerDbConfiguration(configuration, enableLogging, commandTimeout);
+				this.configuration = null!;
+				schemaName = NpgsqlDbContext.DefaultSchema;
+
+				var optionsBuilder = new DbContextOptionsBuilder<NpgsqlDbContext>()
+					.UseSqlServer(sqlServerConfiguration.ConnectionString, sqlOptions =>
+					{
+						sqlOptions.CommandTimeout(sqlServerConfiguration.CommandTimeout);
+					})
+					.UseSnakeCaseNamingConvention()
+					.AddInterceptors(connectionMetricsInterceptor);
+
+				if (sqlServerConfiguration.EnableLogging)
+				{
+					optionsBuilder.EnableSensitiveDataLogging(true);
+				}
+
+				cachedOptions = optionsBuilder.Options;
+				performanceTracker = new QueryPerformanceTracker(NormalizePerformanceConfiguration(sqlServerConfiguration.PerformanceConfiguration));
+				return;
+			}
+
+			sqlServerConfiguration = null!;
+			this.configuration = new NpgsqlDbConfiguration(configuration, enableLogging, commandTimeout);
+			schemaName = this.configuration.Schema;
+
+			var pgOptionsBuilder = new DbContextOptionsBuilder<NpgsqlDbContext>()
+				.UseNpgsql(this.configuration.ConnectionString, npgsqlOptions =>
+				{
+					npgsqlOptions.CommandTimeout(this.configuration.CommandTimeout);
+				})
+				.UseSnakeCaseNamingConvention()
+				.AddInterceptors(connectionMetricsInterceptor);
+
+			if (this.configuration.EnableLogging)
+			{
+				pgOptionsBuilder.EnableSensitiveDataLogging(true);
+			}
+
+			cachedOptions = pgOptionsBuilder.Options;
+			performanceTracker = new QueryPerformanceTracker(NormalizePerformanceConfiguration(this.configuration.PerformanceConfiguration));
 		}
 
 		/// <summary>
@@ -86,6 +141,8 @@ namespace FishMMO.Database.Npgsql
 		public NpgsqlDbContextFactory(NpgsqlDbConfiguration configuration)
 		{
 			this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+			sqlServerConfiguration = null!;
+			schemaName = this.configuration.Schema;
 
 			poolMetrics = new ConnectionPoolMetrics();
 			var connectionMetricsInterceptor = new ConnectionMetricsInterceptor(poolMetrics);
@@ -111,13 +168,13 @@ namespace FishMMO.Database.Npgsql
 		public ConnectionPoolMetrics PoolMetrics => poolMetrics;
 
 		/// <inheritdoc />
-		public int MaxPoolSize => configuration.MaxPoolSize;
+		public int MaxPoolSize => sqlServerConfiguration?.MaxPoolSize ?? configuration.MaxPoolSize;
 
 		/// <inheritdoc />
 		public QueryPerformanceTracker PerformanceTracker => performanceTracker;
 
 		/// <inheritdoc />
-		public RetryPolicyConfiguration RetryPolicy => configuration.RetryPolicy;
+		public RetryPolicyConfiguration RetryPolicy => sqlServerConfiguration?.RetryPolicy ?? configuration.RetryPolicy;
 
 		/// <summary>
 		/// Creates a new DbContext instance. Thread-safe.
@@ -132,7 +189,7 @@ namespace FishMMO.Database.Npgsql
 			try
 			{
 				Interlocked.Increment(ref activeContextCount);
-				var context = new NpgsqlDbContext(cachedOptions, configuration.Schema);
+				var context = new NpgsqlDbContext(cachedOptions, schemaName);
 				context.Disposed += OnContextDisposed;
 				return context;
 			}
