@@ -36,7 +36,7 @@ namespace FishMMO.Database
 
 		/// <summary>
 		/// Resolves the configured database provider. Supports "PostgreSql" and "SqlServer" values.
-		/// Defaults to <see cref="DatabaseProvider.PostgreSql"/> when omitted.
+		/// Defaults to <see cref="DatabaseProvider.SqlServer"/> when omitted.
 		/// </summary>
 		public static DatabaseProvider ResolveDatabaseProvider(IConfiguration configuration)
 		{
@@ -45,7 +45,7 @@ namespace FishMMO.Database
 			string configuredProvider = configuration["Database:Provider"]?.Trim() ?? string.Empty;
 			if (string.IsNullOrWhiteSpace(configuredProvider))
 			{
-				return DatabaseProvider.PostgreSql;
+				return DatabaseProvider.SqlServer;
 			}
 
 			if (configuredProvider.Equals("PostgreSql", StringComparison.OrdinalIgnoreCase) ||

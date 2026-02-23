@@ -17,6 +17,7 @@ namespace FishMMO.Installer
 		/// Stores the loaded application settings from appsettings.json.
 		/// </summary>
 		private static AppSettings appSettings = new AppSettings();
+		private static DatabaseProvider activeProvider = DatabaseProvider.PostgreSql;
 
 		/// <summary>
 		/// Entry point. Loads appsettings.json and runs the installer menu loop.
@@ -31,6 +32,12 @@ namespace FishMMO.Installer
 			Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", environmentName);
 
 			LoadAppSettings(environmentName);
+			activeProvider = DatabaseConfigurationHelper.ResolveDatabaseProvider(new ConfigurationBuilder()
+				.AddInMemoryCollection(new Dictionary<string, string?>
+				{
+					["Database:Provider"] = appSettings.Database?.Provider
+				})
+				.Build());
 			await RunMenuLoop();
 		}
 
@@ -65,6 +72,7 @@ namespace FishMMO.Installer
 			{
 				Console.Clear();
 				Console.WriteLine("Welcome to the FishMMO Installer Tool.");
+				Console.WriteLine($"Active DB Provider: {activeProvider}");
 				Console.WriteLine("Press a key (0-9, A-D):");
 				Console.WriteLine("1 : Install DotNet");
 				Console.WriteLine("2 : Install Visual Studio Build Tools (Windows Only)");
@@ -79,6 +87,7 @@ namespace FishMMO.Installer
 				Console.WriteLine("B : Create new database migration");
 				Console.WriteLine("C : Grant User Permissions on Database");
 				Console.WriteLine("D : Delete FishMMO Database (DANGEROUS!)");
+				Console.WriteLine("E : Switch Active Database Provider (PostgreSql/SqlServer)");
 				Console.WriteLine("0 : Quit");
 
 				ConsoleKeyInfo key = Console.ReadKey(true);
@@ -110,19 +119,27 @@ namespace FishMMO.Installer
 						await LetsEncryptInstaller.InstallLetsEncryptCertificate();
 						break;
 					case ConsoleKey.D9:
-						await HandleWithSettings(
-							s => s.Npgsql?.Host,
-							"Npgsql host",
-							s => PostgreSQLInstaller.InstallPostgreSQL(s));
+						if (activeProvider == DatabaseProvider.SqlServer)
+						{
+							await HandleWithSettings(s => s.SqlServer?.Server, "SqlServer server", SqlServerInstaller.InstallSqlServer);
+						}
+						else
+						{
+							await HandleWithSettings(s => s.Npgsql?.Host, "Npgsql host", PostgreSQLInstaller.InstallPostgreSQL);
+						}
 						break;
 					case ConsoleKey.A:
-						await HandleWithSuperuser(
-							s => s.Npgsql?.Database,
-							"Npgsql database",
-							PostgreSQLInstaller.InstallFishMMODatabase);
+						if (activeProvider == DatabaseProvider.SqlServer)
+						{
+							await HandleWithSettings(s => s.SqlServer?.Database, "SqlServer database", SqlServerInstaller.InstallFishMMODatabase);
+						}
+						else
+						{
+							await HandleWithSuperuser(s => s.Npgsql?.Database, "Npgsql database", PostgreSQLInstaller.InstallFishMMODatabase);
+						}
 						break;
 					case ConsoleKey.B:
-						await PostgreSQLInstaller.CreateMigration();
+						await CreateMigrationForActiveProvider();
 						break;
 					case ConsoleKey.C:
 						await HandleWithSuperuser(
@@ -131,10 +148,18 @@ namespace FishMMO.Installer
 							PostgreSQLInstaller.GrantUserPermissions);
 						break;
 					case ConsoleKey.D:
-						await HandleWithSuperuser(
-							s => s.Npgsql?.Database,
-							"Npgsql database",
-							PostgreSQLInstaller.DeleteFishMMODatabase);
+						if (activeProvider == DatabaseProvider.PostgreSql)
+						{
+							await HandleWithSuperuser(s => s.Npgsql?.Database, "Npgsql database", PostgreSQLInstaller.DeleteFishMMODatabase);
+						}
+						else
+						{
+							InstallerProcessHelper.Log("SQL Server delete is not automated yet. Drop the database manually if required.");
+						}
+						break;
+					case ConsoleKey.E:
+						activeProvider = activeProvider == DatabaseProvider.PostgreSql ? DatabaseProvider.SqlServer : DatabaseProvider.PostgreSql;
+						InstallerProcessHelper.Log($"Switched active provider to {activeProvider}.");
 						break;
 					case ConsoleKey.D0:
 						return;
@@ -146,6 +171,28 @@ namespace FishMMO.Installer
 				Console.WriteLine("Press any key to continue...");
 				Console.ReadKey(true);
 			}
+		}
+
+		private static async Task CreateMigrationForActiveProvider()
+		{
+			string? migrationName = InstallerProcessHelper.PromptForInput("Enter a name for the new migration (e.g., 'AddPlayerInventory'): ");
+			if (string.IsNullOrWhiteSpace(migrationName))
+			{
+				InstallerProcessHelper.Log("Migration name cannot be empty.");
+				return;
+			}
+
+			bool migrationSuccess = await DotNetInstaller.RunEFMigrationAsync(migrationName, activeProvider);
+			if (!migrationSuccess)
+			{
+				InstallerProcessHelper.Log($"Failed to create migration '{migrationName}' for provider '{activeProvider}'.");
+				return;
+			}
+
+			bool updateSuccess = await DotNetInstaller.RunEFDatabaseUpdateAsync(activeProvider);
+			InstallerProcessHelper.Log(updateSuccess
+				? $"Migration '{migrationName}' applied for provider '{activeProvider}'."
+				: $"Migration '{migrationName}' created but not applied for provider '{activeProvider}'.");
 		}
 
 		/// <summary>
