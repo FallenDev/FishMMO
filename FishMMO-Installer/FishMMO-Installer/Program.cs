@@ -9,6 +9,7 @@ namespace FishMMO.Installer
 	public static class Program
 	{
 		private static AppSettings appSettings = new AppSettings();
+		private static DatabaseProvider activeProvider = DatabaseProvider.PostgreSql;
 
 		public static async Task Main(string[] args)
 		{
@@ -20,6 +21,12 @@ namespace FishMMO.Installer
 			Environment.SetEnvironmentVariable("Database__Provider", nameof(DatabaseProvider.SqlServer));
 
 			LoadAppSettings(environmentName);
+			activeProvider = DatabaseConfigurationHelper.ResolveDatabaseProvider(new ConfigurationBuilder()
+				.AddInMemoryCollection(new Dictionary<string, string?>
+				{
+					["Database:Provider"] = appSettings.Database?.Provider
+				})
+				.Build());
 			await RunMenuLoop();
 		}
 

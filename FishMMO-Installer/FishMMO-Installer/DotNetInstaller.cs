@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using FishMMO.Database;
 
 namespace FishMMO.Installer
 {
@@ -227,7 +228,7 @@ namespace FishMMO.Installer
 		/// </summary>
 		/// <param name="migrationName">Name of the migration to create.</param>
 		/// <returns>True if the command succeeded, otherwise false.</returns>
-		public static async Task<bool> RunEFMigrationAsync(string migrationName)
+		public static async Task<bool> RunEFMigrationAsync(string migrationName, DatabaseProvider provider = DatabaseProvider.PostgreSql)
 		{
 			if (!Regex.IsMatch(migrationName, "^[A-Za-z][A-Za-z0-9]*$"))
 			{
@@ -246,7 +247,7 @@ namespace FishMMO.Installer
 		/// Runs a dotnet ef database update command to apply pending migrations.
 		/// </summary>
 		/// <returns>True if the command succeeded, otherwise false.</returns>
-		public static async Task<bool> RunEFDatabaseUpdateAsync()
+		public static async Task<bool> RunEFDatabaseUpdateAsync(DatabaseProvider provider = DatabaseProvider.PostgreSql)
 		{
 			const string providerArg = "SqlServer";
 

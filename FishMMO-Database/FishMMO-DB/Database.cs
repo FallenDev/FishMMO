@@ -84,6 +84,7 @@ namespace FishMMO.Database
 		/// <exception cref="DatabaseException">Thrown when initialization fails.</exception>
 		private void Initialize(
 			INpgsqlDbContextFactory dbContextFactory,
+			DatabaseProvider provider,
 			int healthCheckWarningMs,
 			int healthCheckCriticalMs)
 		{
