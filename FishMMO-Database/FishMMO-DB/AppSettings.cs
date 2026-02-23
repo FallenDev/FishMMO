@@ -10,14 +10,36 @@ namespace FishMMO.Database
 	public class AppSettings
 	{
 		/// <summary>
+		/// Gets or sets common database provider selection settings.
+		/// </summary>
+		public DatabaseSettings Database { get; set; } = new();
+
+		/// <summary>
 		/// Gets or sets PostgreSQL connection settings.
 		/// </summary>
 		public NpgsqlSettings Npgsql { get; set; } = new();
 
 		/// <summary>
+		/// Gets or sets SQL Server connection settings.
+		/// </summary>
+		public SqlServerSettings SqlServer { get; set; } = new();
+
+		/// <summary>
 		/// Gets or sets Redis connection settings.
 		/// </summary>
 		public RedisSettings Redis { get; set; } = new();
+	}
+
+	/// <summary>
+	/// Common database settings.
+	/// </summary>
+	[Serializable]
+	public class DatabaseSettings
+	{
+		/// <summary>
+		/// Gets or sets the active database provider.
+		/// </summary>
+		public string Provider { get; set; } = nameof(DatabaseProvider.PostgreSql);
 	}
 
 	/// <summary>
@@ -84,6 +106,25 @@ namespace FishMMO.Database
 		/// <summary>
 		/// Gets or sets the retry policy configuration for transient failure handling.
 		/// </summary>
+		public RetryPolicyConfiguration RetryPolicy { get; set; } = new();
+	}
+
+	/// <summary>
+	/// SQL Server connection settings.
+	/// </summary>
+	[Serializable]
+	public class SqlServerSettings
+	{
+		public string Server { get; set; } = "127.0.0.1,1433";
+        public string Database { get; set; } = "fish_mmo_sqlserver";
+		public string Username { get; set; } = "sa";
+		public string Password { get; set; } = "pass";
+		public bool TrustServerCertificate { get; set; } = true;
+		public int CommandTimeout { get; set; } = 10;
+		public int ConnectionTimeout { get; set; } = 15;
+		public int MinPoolSize { get; set; } = 5;
+		public int MaxPoolSize { get; set; } = 100;
+		public QueryPerformanceConfiguration QueryPerformanceTracking { get; set; } = new();
 		public RetryPolicyConfiguration RetryPolicy { get; set; } = new();
 	}
 

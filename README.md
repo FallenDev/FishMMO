@@ -101,7 +101,7 @@ Execute the installer to set up the necessary tools and the database.
 
 1.  Run the **`Database Installer.exe`** you just built.
 2.  The installer will guide you through the process, automatically checking for and installing missing dependencies such as:
-    - **.NET 8 SDK**
+    - **.NET 10 SDK**
     - **Visual Studio Build Tools** (with .NET Desktop, C++ workloads, MSVC compiler, and Windows 10 SDK)
     - **NGINX** (optional)
     - **PostgreSQL**

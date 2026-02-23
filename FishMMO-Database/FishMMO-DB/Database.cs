@@ -9,6 +9,7 @@ using FishMMO.Database.Npgsql.Monitoring.Health;
 using FishMMO.Database.Npgsql.Monitoring.Metrics;
 using FishMMO.Database.Npgsql.Monitoring.Diagnostics;
 using FishMMO.Database.Exceptions;
+using FishMMO.Database.SqlServer;
 
 namespace FishMMO.Database
 {
@@ -67,15 +68,13 @@ namespace FishMMO.Database
 			if (configuration == null)
 				throw new ArgumentNullException(nameof(configuration));
 
-			var dbConfiguration = new NpgsqlDbConfiguration(
-				configuration,
-				enableLogging,
-				commandTimeout);
+			DatabaseProvider provider = DatabaseConfigurationHelper.ResolveDatabaseProvider(configuration);
 
-			Initialize(
-				new NpgsqlDbContextFactory(dbConfiguration),
-				healthCheckWarningMs,
-				healthCheckCriticalMs);
+			INpgsqlDbContextFactory dbContextFactory = provider == DatabaseProvider.SqlServer
+				? new SqlServerDbContextFactory(new SqlServerDbConfiguration(configuration, enableLogging, commandTimeout))
+				: new NpgsqlDbContextFactory(new NpgsqlDbConfiguration(configuration, enableLogging, commandTimeout));
+
+			Initialize(dbContextFactory, provider, healthCheckWarningMs, healthCheckCriticalMs);
 		}
 
 		/// <summary>
@@ -88,13 +87,16 @@ namespace FishMMO.Database
 		/// <exception cref="DatabaseException">Thrown when initialization fails.</exception>
 		private void Initialize(
 			INpgsqlDbContextFactory dbContextFactory,
+			DatabaseProvider provider,
 			int healthCheckWarningMs,
 			int healthCheckCriticalMs)
 		{
 			try
 			{
 				DbContextFactory = dbContextFactory;
-				ServiceRegistry = CreateNpgsqlServiceRegistry(DbContextFactory);
+				ServiceRegistry = provider == DatabaseProvider.SqlServer
+					? CreateSqlServerServiceRegistry(DbContextFactory)
+					: CreateNpgsqlServiceRegistry(DbContextFactory);
 				HealthMonitor = new DatabaseHealthMonitor(
 					DbContextFactory,
 					healthCheckWarningMs,
@@ -110,6 +112,16 @@ namespace FishMMO.Database
 			}
 		}
 
+		private IDatabaseServiceRegistry CreateSqlServerServiceRegistry(INpgsqlDbContextFactory dbContextFactory)
+		{
+			if (dbContextFactory == null)
+				throw new ArgumentNullException(nameof(dbContextFactory));
+
+			var registry = new SqlServerServiceRegistry();
+			RegisterServicesByReflection(registry, dbContextFactory);
+			return registry;
+		}
+
 		/// <summary>
 		/// Creates and populates an <see cref="NpgsqlServiceRegistry"/> by reflecting over the
 		/// Npgsql services assembly and constructing concrete implementations.
@@ -123,7 +135,7 @@ namespace FishMMO.Database
 				throw new ArgumentNullException(nameof(dbContextFactory));
 
 			var registry = new NpgsqlServiceRegistry();
-			RegisterNpgsqlServicesByReflection(registry, dbContextFactory);
+			RegisterServicesByReflection(registry, dbContextFactory);
 			return registry;
 		}
 
@@ -139,7 +151,7 @@ namespace FishMMO.Database
 		/// <param name="dbContextFactory">Factory instance to pass to service constructors. Cannot be <c>null</c>.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="registry"/> or <paramref name="dbContextFactory"/> is <c>null</c>.</exception>
 		/// <exception cref="DatabaseException">Thrown when service discovery or construction fails.</exception>
-		private static void RegisterNpgsqlServicesByReflection(NpgsqlServiceRegistry registry, INpgsqlDbContextFactory dbContextFactory)
+		private static void RegisterServicesByReflection(IDatabaseServiceRegistry registry, INpgsqlDbContextFactory dbContextFactory)
 		{
 			if (registry == null)
 				throw new ArgumentNullException(nameof(registry));
@@ -165,7 +177,7 @@ namespace FishMMO.Database
 					&& t.Namespace.StartsWith("FishMMO.Database.Npgsql.Services", StringComparison.Ordinal))
 				.ToArray();
 
-			var registerOpenMethod = typeof(NpgsqlServiceRegistry).GetMethod(
+			var registerOpenMethod = registry.GetType().GetMethod(
 				"Register",
 				BindingFlags.Instance | BindingFlags.NonPublic);
 			if (registerOpenMethod == null)

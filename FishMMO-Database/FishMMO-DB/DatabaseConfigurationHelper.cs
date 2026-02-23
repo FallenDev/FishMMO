@@ -33,6 +33,39 @@ namespace FishMMO.Database
 #endif
 		}
 
+
+		/// <summary>
+		/// Resolves the configured database provider. Supports "PostgreSql" and "SqlServer" values.
+		/// Defaults to <see cref="DatabaseProvider.SqlServer"/> when omitted.
+		/// </summary>
+		public static DatabaseProvider ResolveDatabaseProvider(IConfiguration configuration)
+		{
+			if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+
+			string configuredProvider = configuration["Database:Provider"]?.Trim() ?? string.Empty;
+			if (string.IsNullOrWhiteSpace(configuredProvider))
+			{
+				return DatabaseProvider.SqlServer;
+			}
+
+			if (configuredProvider.Equals("PostgreSql", StringComparison.OrdinalIgnoreCase) ||
+				configuredProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase) ||
+				configuredProvider.Equals("Npgsql", StringComparison.OrdinalIgnoreCase))
+			{
+				return DatabaseProvider.PostgreSql;
+			}
+
+			if (configuredProvider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase) ||
+				configuredProvider.Equals("Mssql", StringComparison.OrdinalIgnoreCase))
+			{
+				return DatabaseProvider.SqlServer;
+			}
+
+			throw new ArgumentException(
+				$"Unsupported database provider '{configuredProvider}'. Expected one of: PostgreSql, SqlServer.",
+				nameof(configuration));
+		}
+
 		/// <summary>
 		/// Builds an <see cref="IConfiguration"/> instance suitable for design-time (EF Core tools).
 		/// Loads <c>appsettings.json</c>, an optional environment-specific file and environment variables

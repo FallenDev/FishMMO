@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <RootNamespace>FishMMO.Database.Migrator</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -20,7 +20,10 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.4" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.4" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.17" />
+      <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
       <PackageReference Include="StackExchange.Redis" Version="2.7.4" />
     </ItemGroup>

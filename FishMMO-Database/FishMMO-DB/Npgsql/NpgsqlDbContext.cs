@@ -101,6 +101,8 @@ namespace FishMMO.Database.Npgsql
 		{
 			base.OnModelCreating(modelBuilder);
 
+			string providerName = Database.ProviderName ?? string.Empty;
+
 			modelBuilder.Entity<SqlIntValue>().HasNoKey();
 			modelBuilder.Entity<SqlLongValue>().HasNoKey();
 
@@ -111,7 +113,7 @@ namespace FishMMO.Database.Npgsql
 			modelBuilder.ApplyConfigurationsFromAssembly(typeof(NpgsqlDbContext).Assembly);
 
 			ApplyLogicalVersionConventions(modelBuilder);
-			ApplyTimeCreatedConventions(modelBuilder);
+			ApplyTimeCreatedConventions(modelBuilder, providerName);
 		}
 
 		private static void ApplyLogicalVersionConventions(ModelBuilder modelBuilder)
@@ -152,8 +154,12 @@ namespace FishMMO.Database.Npgsql
 			}
 		}
 
-		private static void ApplyTimeCreatedConventions(ModelBuilder modelBuilder)
+		private static void ApplyTimeCreatedConventions(ModelBuilder modelBuilder, string providerName)
 		{
+			string timeCreatedDefaultSql = providerName.Contains("SqlServer", StringComparison.OrdinalIgnoreCase)
+				? "SYSUTCDATETIME()"
+				: "CURRENT_TIMESTAMP";
+
 			foreach (var entityType in modelBuilder.Model.GetEntityTypes())
 			{
 				var clrType = entityType.ClrType;
@@ -168,7 +174,7 @@ namespace FishMMO.Database.Npgsql
 					.Property<DateTime>("TimeCreated")
 					.IsRequired()
 					.ValueGeneratedOnAdd()
-					.HasDefaultValueSql("CURRENT_TIMESTAMP");
+					.HasDefaultValueSql(timeCreatedDefaultSql);
 			}
 		}
 	}

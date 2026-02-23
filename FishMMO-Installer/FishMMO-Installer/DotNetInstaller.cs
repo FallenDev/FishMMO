@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using FishMMO.Database;
 
 namespace FishMMO.Installer
 {
@@ -20,7 +21,7 @@ namespace FishMMO.Installer
 
 			if (!await IsDotNetInstalledAsync())
 			{
-				if (InstallerProcessHelper.PromptForYesNo("DotNet 8 is not installed, would you like to install it?"))
+				if (InstallerProcessHelper.PromptForYesNo("DotNet 10 is not installed, would you like to install it?"))
 				{
 					InstallerProcessHelper.Log("Installing DotNet...");
 					await DownloadAndInstallDotNetAsync();
@@ -73,7 +74,7 @@ namespace FishMMO.Installer
 			{
 				if (e != 0) return false;
 
-				// Each line looks like: "8.0.302 [/usr/share/dotnet/sdk]"
+				// Each line looks like: "10.0.100 [/usr/share/dotnet/sdk]"
 				using var reader = new StringReader(o);
 				string? line;
 				while ((line = reader.ReadLine()) != null)
@@ -227,7 +228,7 @@ namespace FishMMO.Installer
 		/// </summary>
 		/// <param name="migrationName">Name of the migration to create.</param>
 		/// <returns>True if the command succeeded, otherwise false.</returns>
-		public static async Task<bool> RunEFMigrationAsync(string migrationName)
+		public static async Task<bool> RunEFMigrationAsync(string migrationName, DatabaseProvider provider = DatabaseProvider.PostgreSql)
 		{
 			if (!Regex.IsMatch(migrationName, "^[A-Za-z][A-Za-z0-9]*$"))
 			{
@@ -235,18 +236,23 @@ namespace FishMMO.Installer
 				return false;
 			}
 
+			string providerArg = provider == DatabaseProvider.SqlServer ? "SqlServer" : "PostgreSql";
+			string outputDir = provider == DatabaseProvider.SqlServer ? "SqlServerMigrations" : "Migrations";
+
 			return await RunDotNetCommandAsync(
-				$"ef migrations add {migrationName} -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\"");
+				$"ef migrations add {migrationName} -o {outputDir} -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
 		}
 
 		/// <summary>
 		/// Runs a dotnet ef database update command to apply pending migrations.
 		/// </summary>
 		/// <returns>True if the command succeeded, otherwise false.</returns>
-		public static async Task<bool> RunEFDatabaseUpdateAsync()
+		public static async Task<bool> RunEFDatabaseUpdateAsync(DatabaseProvider provider = DatabaseProvider.PostgreSql)
 		{
+			string providerArg = provider == DatabaseProvider.SqlServer ? "SqlServer" : "PostgreSql";
+
 			return await RunDotNetCommandAsync(
-				$"ef database update -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\"");
+				$"ef database update -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
 		}
 	}
 }
