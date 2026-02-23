@@ -20,7 +20,7 @@ namespace FishMMO.Installer
 
 			if (!await IsDotNetInstalledAsync())
 			{
-				if (InstallerProcessHelper.PromptForYesNo("DotNet 8 is not installed, would you like to install it?"))
+				if (InstallerProcessHelper.PromptForYesNo("DotNet 10 is not installed, would you like to install it?"))
 				{
 					InstallerProcessHelper.Log("Installing DotNet...");
 					await DownloadAndInstallDotNetAsync();
@@ -73,7 +73,7 @@ namespace FishMMO.Installer
 			{
 				if (e != 0) return false;
 
-				// Each line looks like: "8.0.302 [/usr/share/dotnet/sdk]"
+				// Each line looks like: "10.0.100 [/usr/share/dotnet/sdk]"
 				using var reader = new StringReader(o);
 				string? line;
 				while ((line = reader.ReadLine()) != null)

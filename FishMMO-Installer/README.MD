@@ -96,8 +96,8 @@ dotnet run --project FishMMO-Installer
 
 Run binary directly:
 
-- Windows: `FishMMO-Installer/bin/Debug/net8.0/FishMMO-Installer.exe`
-- Linux: `./FishMMO-Installer/bin/Debug/net8.0/FishMMO-Installer`
+- Windows: `FishMMO-Installer/bin/Debug/net10.0/FishMMO-Installer.exe`
+- Linux: `./FishMMO-Installer/bin/Debug/net10.0/FishMMO-Installer`
 
 ---
 

@@ -38,9 +38,9 @@ namespace FishMMO.Shared.DotNetBuilder
 		public string BuildConfiguration = "Release";
 
 		/// <summary>
-		/// Target Framework (e.g., "netstandard2.1", "net6.0", "net8.0", or a specific framework if multi-targeting).
+		/// Target Framework (e.g., "netstandard2.1", "net6.0", "net10.0", or a specific framework if multi-targeting).
 		/// </summary>
-		[Tooltip("Target Framework (e.g., 'netstandard2.1', 'net6.0', 'net8.0', or a specific framework if multi-targeting).")]
+		[Tooltip("Target Framework (e.g., 'netstandard2.1', 'net6.0', 'net10.0', or a specific framework if multi-targeting).")]
 		public string TargetFramework = "netstandard2.1";
 
 		/// <summary>
