@@ -236,8 +236,8 @@ namespace FishMMO.Installer
 				return false;
 			}
 
-			string providerArg = provider == DatabaseProvider.SqlServer ? "SqlServer" : "PostgreSql";
-			string outputDir = provider == DatabaseProvider.SqlServer ? "SqlServerMigrations" : "Migrations";
+			const string providerArg = "SqlServer";
+			const string outputDir = "SqlServerMigrations";
 
 			return await RunDotNetCommandAsync(
 				$"ef migrations add {migrationName} -o {outputDir} -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
@@ -249,7 +249,7 @@ namespace FishMMO.Installer
 		/// <returns>True if the command succeeded, otherwise false.</returns>
 		public static async Task<bool> RunEFDatabaseUpdateAsync(DatabaseProvider provider = DatabaseProvider.PostgreSql)
 		{
-			string providerArg = provider == DatabaseProvider.SqlServer ? "SqlServer" : "PostgreSql";
+			const string providerArg = "SqlServer";
 
 			return await RunDotNetCommandAsync(
 				$"ef database update -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");

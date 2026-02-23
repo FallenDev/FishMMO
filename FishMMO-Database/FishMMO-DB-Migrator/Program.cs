@@ -1,8 +1,6 @@
 using FishMMO.Database;
-using FishMMO.Database.Npgsql;
 using FishMMO.Database.SqlServer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace FishMMO.Database.Migrator;
 
@@ -12,17 +10,12 @@ public static class Program
 	{
 		try
 		{
-			IConfiguration configuration = DatabaseConfigurationHelper.BuildDesignTimeConfiguration();
-			DatabaseProvider provider = DatabaseConfigurationHelper.ResolveDatabaseProvider(configuration);
-
-			await using var factory = provider == DatabaseProvider.SqlServer
-				? (INpgsqlDbContextFactory)new SqlServerDbContextFactory(configuration)
-				: new NpgsqlDbContextFactory(configuration);
-
-			await using NpgsqlDbContext dbContext = await factory.CreateDbContextAsync();
+			Environment.SetEnvironmentVariable("Database__Provider", "SqlServer");
+			await using var factory = new SqlServerDbContextFactory(DatabaseConfigurationHelper.BuildDesignTimeConfiguration());
+			await using var dbContext = await factory.CreateDbContextAsync();
 			await dbContext.Database.MigrateAsync();
 
-			Console.WriteLine($"Migrations applied successfully using provider '{provider}'.");
+			Console.WriteLine("SQL Server migrations applied successfully.");
 			return 0;
 		}
 		catch (Exception ex)

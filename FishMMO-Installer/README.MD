@@ -16,13 +16,13 @@ FishMMO-Installer is a cross-platform .NET 8 console tool that automates FishMMO
 
 - Install DotNet SDK 8 + `dotnet-ef` `5.0.17`
 - Install Visual Studio Build Tools (Windows)
-- Install PgBouncer (connection pooler)
+- Install SQL Server tools
 - Build all discovered C# projects under a selected root directory
 - Install Unity Hub
 - Install Unity Editor + selected modules
 - Install NGINX and configure service startup
 - Install/Renew Let's Encrypt certificates for NGINX
-- Install PostgreSQL
+- Validate SQL Server
 - Create/manage FishMMO database and permissions
 
 ---
@@ -117,13 +117,13 @@ dotnet run --project FishMMO-Installer
 3. Recommended installer order:
   - `1` Install DotNet
   - `2` Install Visual Studio Build Tools
-  - `3` Install PgBouncer
+  - `3` Validate SQL Server
   - `4` Build all C# Projects
   - `5` Install Unity Hub
   - `6` Install Unity Editor (+Modules)
   - `7` Install NGINX
   - `8` Install/Renew Let's Encrypt Certificate
-  - `9` Install PostgreSQL
+  - `9` Validate SQL Server
   - `A` Install FishMMO Database
 
 ### Ubuntu/Debian quick start
@@ -139,19 +139,19 @@ dotnet run --project FishMMO-Installer
 
 3. Recommended installer order:
   - `1` Install DotNet
-  - `3` Install PgBouncer
+  - `3` Validate SQL Server
   - `4` Build all C# Projects
   - `5` Install Unity Hub
   - `6` Install Unity Editor (+Modules)
   - `7` Install NGINX
   - `8` Install/Renew Let's Encrypt Certificate
-  - `9` Install PostgreSQL
+  - `9` Validate SQL Server
   - `A` Install FishMMO Database
 
 Notes:
 
 - You will be prompted for `sudo` password for system operations.
-- NGINX and PostgreSQL are managed with `systemctl`.
+- NGINX and SQL Server are managed with `systemctl`.
 
 ### Arch Linux / CachyOS quick start
 
@@ -166,13 +166,13 @@ dotnet run --project FishMMO-Installer
 
 3. Recommended installer order:
   - `1` Install DotNet
-  - `3` Install PgBouncer
+  - `3` Validate SQL Server
   - `4` Build all C# Projects
   - `5` Install Unity Hub (requires `yay` or `paru`)
   - `6` Install Unity Editor (+Modules)
   - `7` Install NGINX
   - `8` Install/Renew Let's Encrypt Certificate
-  - `9` Install PostgreSQL
+  - `9` Validate SQL Server
   - `A` Install FishMMO Database
 
 If you do not have an AUR helper:
@@ -192,13 +192,12 @@ Database options require `appsettings.json` in the working directory:
 
 ```json
 {
-  "Npgsql": {
-    "Database": "fishmmo",
-    "Schema": "public",
-    "Username": "fishmmo",
-    "Password": "your_password",
-    "Host": "localhost",
-    "Port": "5432"
+  "SqlServer": {
+    "Server": "127.0.0.1,1433",
+    "Database": "fish_mmo_sqlserver",
+    "Username": "sa",
+    "Password": "pass",
+    "TrustServerCertificate": true
   }
 }
 ```
@@ -212,13 +211,13 @@ Welcome to the FishMMO Installer Tool.
 Press a key (0-9, A-D):
 1 : Install DotNet
 2 : Install Visual Studio Build Tools (Windows Only)
-3 : Install PgBouncer (Connection Pooler)
+3 : Validate SQL Server (Connection Pooler)
 4 : Build all C# Projects
 5 : Install Unity Hub
 6 : Install Unity Editor (+Modules)
 7 : Install NGINX (Web Server/Reverse Proxy)
 8 : Install/Renew Let's Encrypt Certificate (NGINX)
-9 : Install PostgreSQL (Database Server)
+9 : Validate SQL Server (Database Server)
 A : Install FishMMO Database (User/Schema/Initial Migration)
 B : Create new database migration
 C : Grant User Permissions on Database
@@ -238,7 +237,7 @@ D : Delete FishMMO Database (DANGEROUS!)
   - Enter domains (for example: `fishmmo.com,play.fishmmo.com,api.fishmmo.com,game.fishmmo.com`)
   - Enter email
   - Use staging first (`Y`) to validate flow
-4. Press `9` to install PostgreSQL.
+4. Press `9` to validate SQL Server.
 5. Press `A` to create FishMMO database and optional initial migration.
 
 ### Example B: Fresh Windows setup
@@ -246,7 +245,7 @@ D : Delete FishMMO Database (DANGEROUS!)
 1. Run installer from elevated PowerShell.
 2. Press `7` to install NGINX (ZIP extraction + Windows service creation).
 3. Press `8` to install/renew certificate with win-acme.
-4. Press `9` then `A` for PostgreSQL + FishMMO DB setup.
+4. Press `9` then `A` for SQL Server + FishMMO DB setup.
 
 ### Example C: Add a new migration
 
@@ -273,7 +272,7 @@ sudo nginx -t
 sc.exe query "FishMMO-NGINX"
 ```
 
-### PostgreSQL
+### SQL Server
 
 - Linux:
 
@@ -281,7 +280,7 @@ sc.exe query "FishMMO-NGINX"
 sudo systemctl status postgresql
 ```
 
-- Windows: verify PostgreSQL service is running in Services or with `sc.exe query`.
+- Windows: verify SQL Server service is running in Services or with `sc.exe query`.
 
 ### DotNet + EF tool
 
@@ -442,7 +441,7 @@ Expected outcome:
 
 Downloads and runs Build Tools installer silently with required workloads.
 
-### 3 — Install PgBouncer (Connection Pooler)
+### 3 — Validate SQL Server (Connection Pooler)
 
 - Windows: attempts `winget` package install first, then Chocolatey fallback
 - Ubuntu/Debian: package install + `systemctl enable --now pgbouncer`
@@ -516,7 +515,7 @@ Notes:
 - Wildcard domains (`*.example.com`) are intentionally rejected in this webroot workflow.
 - Use staging mode first for safe validation.
 
-### 9 — Install PostgreSQL
+### 9 — Validate SQL Server
 
 - Windows: unattended EDB installer flow
 - Ubuntu/Debian: package install + `systemctl`
@@ -554,21 +553,21 @@ Exits installer.
 
 - NGINX: ZIP install + NSSM-backed service (`FishMMO-NGINX`)
 - Let's Encrypt: win-acme + PEM integration
-- PostgreSQL: EDB unattended installer
-- PgBouncer: package-manager installation attempt (`winget` then Chocolatey fallback)
+- SQL Server: validate existing installation
+- 
 - VS Build Tools: supported
 
 ### Ubuntu/Debian
 
 - Package manager: `apt-get`
-- PgBouncer: package install + systemd enable/start
+- SQL Server: external installation managed by administrator
 - Service management: `systemctl`
 - Let's Encrypt: certbot webroot flow
 
 ### Arch/CachyOS
 
 - Package manager: `pacman`
-- PgBouncer: package install + systemd enable/start
+- SQL Server: external installation managed by administrator
 - Unity Hub: AUR helper (`yay`/`paru`)
 - Service management: `systemctl`
 - Let's Encrypt: certbot webroot flow
@@ -584,12 +583,12 @@ Exits installer.
 | `InstallerProcessHelper.cs` | Process/shell helpers, download utilities, prompts/logging |
 | `DotNetInstaller.cs` | DotNet SDK and EF tooling installation + EF commands |
 | `VSBuildToolsInstaller.cs` | VS Build Tools (Windows) |
-| `PgBouncerInstaller.cs` | PgBouncer installation + post-install pooling guidance |
+| `SqlServerInstaller.cs` | SQL Server connectivity + database provisioning |
 | `ProjectBuildInstaller.cs` | Recursive C# project discovery + parallel clean/build |
 | `UnityInstaller.cs` | Unity Hub and Unity Editor installation |
 | `NGINXInstaller.cs` | NGINX installation and service management |
 | `LetsEncryptInstaller.cs` | Certificate install/renew flows for NGINX |
-| `PostgreSQLInstaller.cs` | PostgreSQL and FishMMO DB operations |
+| `SqlServerInstaller.cs` | SQL Server connectivity + database provisioning |
 
 ## License
 

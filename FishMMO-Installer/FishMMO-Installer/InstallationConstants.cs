@@ -42,36 +42,6 @@ namespace FishMMO.Installer
 		public const string DotNetEFVersion = "5.0.17";
 
 		/// <summary>
-		/// Download URL for the PostgreSQL Windows installer.
-		/// </summary>
-		public const string PostgreSQLWindowsInstallerUrl = @"https://sbp.enterprisedb.com/getfile.jsp?fileid=1259105";
-
-		/// <summary>
-		/// Filename for the downloaded PostgreSQL Windows installer.
-		/// </summary>
-		public const string PostgreSQLWindowsInstallerFileName = "PostgreSQLInstaller.exe";
-
-		/// <summary>
-		/// Default PostgreSQL superuser account name.
-		/// </summary>
-		public const string PostgreSQLDefaultSuperuser = "postgres";
-
-		/// <summary>
-		/// Default PostgreSQL administrative database name.
-		/// </summary>
-		public const string PostgreSQLDefaultAdminDb = "postgres";
-
-		/// <summary>
-		/// Default PgBouncer listen port.
-		/// </summary>
-		public const string PgBouncerDefaultPort = "6432";
-
-		/// <summary>
-		/// Default Linux systemd service name for PgBouncer.
-		/// </summary>
-		public const string PgBouncerLinuxServiceName = "pgbouncer";
-
-		/// <summary>
 		/// Download URL for the NGINX Windows zip archive.
 		/// </summary>
 		public const string NGINXWindowsDownloadUrl = "https://github.com/nginx/nginx/releases/download/release-1.29.5/nginx-1.29.5.zip";

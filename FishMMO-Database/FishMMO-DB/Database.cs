@@ -68,13 +68,10 @@ namespace FishMMO.Database
 			if (configuration == null)
 				throw new ArgumentNullException(nameof(configuration));
 
-			DatabaseProvider provider = DatabaseConfigurationHelper.ResolveDatabaseProvider(configuration);
-
-			INpgsqlDbContextFactory dbContextFactory = provider == DatabaseProvider.SqlServer
-				? new SqlServerDbContextFactory(new SqlServerDbConfiguration(configuration, enableLogging, commandTimeout))
-				: new NpgsqlDbContextFactory(new NpgsqlDbConfiguration(configuration, enableLogging, commandTimeout));
-
-			Initialize(dbContextFactory, provider, healthCheckWarningMs, healthCheckCriticalMs);
+			Initialize(
+				new SqlServerDbContextFactory(new SqlServerDbConfiguration(configuration, enableLogging, commandTimeout)),
+				healthCheckWarningMs,
+				healthCheckCriticalMs);
 		}
 
 		/// <summary>
@@ -94,9 +91,7 @@ namespace FishMMO.Database
 			try
 			{
 				DbContextFactory = dbContextFactory;
-				ServiceRegistry = provider == DatabaseProvider.SqlServer
-					? CreateSqlServerServiceRegistry(DbContextFactory)
-					: CreateNpgsqlServiceRegistry(DbContextFactory);
+				ServiceRegistry = CreateSqlServerServiceRegistry(DbContextFactory);
 				HealthMonitor = new DatabaseHealthMonitor(
 					DbContextFactory,
 					healthCheckWarningMs,
@@ -129,18 +124,8 @@ namespace FishMMO.Database
 		/// <param name="dbContextFactory">DbContext factory passed to service constructors.</param>
 		/// <returns>An initialized <see cref="IDatabaseServiceRegistry"/> instance.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="dbContextFactory"/> is <c>null</c>.</exception>
-		private IDatabaseServiceRegistry CreateNpgsqlServiceRegistry(INpgsqlDbContextFactory dbContextFactory)
-		{
-			if (dbContextFactory == null)
-				throw new ArgumentNullException(nameof(dbContextFactory));
-
-			var registry = new NpgsqlServiceRegistry();
-			RegisterServicesByReflection(registry, dbContextFactory);
-			return registry;
-		}
-
 		/// <summary>
-		/// Discovers and registers Npgsql service implementations by reflection.
+		/// Discovers and registers SQL Server-backed service implementations by reflection.
 		///
 		/// The method finds all service interfaces in the namespace
 		/// <c>FishMMO.Database.Npgsql.Services.Interfaces</c> and pairs them with a single concrete

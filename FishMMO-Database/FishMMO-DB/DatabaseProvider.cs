@@ -5,7 +5,6 @@ namespace FishMMO.Database
 	/// </summary>
 	public enum DatabaseProvider
 	{
-		PostgreSql,
 		SqlServer
 	}
 }
