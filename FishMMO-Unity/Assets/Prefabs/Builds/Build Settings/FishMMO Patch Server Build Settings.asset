@@ -16,7 +16,7 @@ MonoBehaviour:
   OutputDirectory: C:/Users/jim/Desktop/Builds/Patcher Server
   UseDefaultOutputPath: 0
   BuildConfiguration: Release
-  TargetFramework: net8.0
+  TargetFramework: net10.0
   DotnetExecutablePath: dotnet
   SkipDotNetRestore: 0
   PerformCleanBeforeBuild: 1
