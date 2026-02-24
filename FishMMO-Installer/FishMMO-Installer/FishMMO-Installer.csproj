@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
   </ItemGroup>
 
   <!-- Copy the FishMMO-Database directory into the build output for migration support -->
@@ -27,12 +27,9 @@
       <FishMMODatabaseDest>$(OutputPath)FishMMO-Database</FishMMODatabaseDest>
     </PropertyGroup>
     <ItemGroup>
-      <FishMMODatabaseFiles Include="$(FishMMODatabaseSource)\**\*.*"
-                            Exclude="$(FishMMODatabaseSource)\**\bin\**;$(FishMMODatabaseSource)\**\obj\**;$(FishMMODatabaseSource)\.vs\**" />
+      <FishMMODatabaseFiles Include="$(FishMMODatabaseSource)\**\*.*" Exclude="$(FishMMODatabaseSource)\**\bin\**;$(FishMMODatabaseSource)\**\obj\**;$(FishMMODatabaseSource)\.vs\**" />
     </ItemGroup>
-    <Copy SourceFiles="@(FishMMODatabaseFiles)"
-          DestinationFiles="@(FishMMODatabaseFiles->'$(FishMMODatabaseDest)\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(FishMMODatabaseFiles)" DestinationFiles="@(FishMMODatabaseFiles->'$(FishMMODatabaseDest)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
     <Message Text="Copied FishMMO-Database to $(FishMMODatabaseDest)" Importance="high" />
   </Target>
 
