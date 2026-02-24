@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json.Serialization; // Added for JsonConverter attribute
 
 namespace FishMMO.Logging
 {
@@ -7,7 +6,6 @@ namespace FishMMO.Logging
 	/// Defines the common interface for all logger configurations.
 	/// This allows for a flexible list of different logger types in the main LoggingConfig.
 	/// </summary>
-	[JsonConverter(typeof(ILoggerConfigConverter))] // Instructs System.Text.Json to use our custom converter
 	public interface ILoggerConfig
 	{
 		/// <summary>
