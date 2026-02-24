@@ -339,7 +339,6 @@ namespace FishMMO.Logging
 					WriteIndented = true, // For pretty printing the JSON
 					Converters = { new ILoggerConfigConverter(),
 								   new JsonStringEnumConverter() },
-					ReferenceHandler = ReferenceHandler.IgnoreCycles, // Handle potential circular references if any
 				});
 				await File.WriteAllTextAsync(filePath, jsonString);
 
