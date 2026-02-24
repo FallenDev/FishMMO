@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using FishMMO.Database;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 using FishMMO.Server.Core;
 using FishMMO.Server.Core.Account;
 using FishMMO.Server.Core.LoginServer;

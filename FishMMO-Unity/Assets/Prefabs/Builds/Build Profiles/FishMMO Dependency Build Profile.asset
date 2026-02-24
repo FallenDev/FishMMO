@@ -51,8 +51,8 @@ MonoBehaviour:
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\Microsoft.Extensions.Options.dll\".\r\n        
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\Microsoft.Extensions.Primitives.dll\".\r\n        
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\Newtonsoft.Json.dll\".\r\n        
-    Deleting file \"D:\\FishMMO Dev\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\Npgsql.dll\".\r\n        
-    Deleting file \"D:\\FishMMO Dev\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\Npgsql.EntityFrameworkCore.PostgreSQL.dll\".\r\n        
+    Deleting file \"D:\\FishMMO Dev\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\Microsoft.Data.SqlClient.dll\".\r\n        
+    Deleting file \"D:\\FishMMO Dev\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\Microsoft.EntityFrameworkCore.SqlServer.dll\".\r\n        
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\OpenAI_API.dll\".\r\n        
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\Pipelines.Sockets.Unofficial.dll\".\r\n        
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Dependencies\\bin\\Release\\netstandard2.1\\srp.dll\".\r\n        
@@ -173,8 +173,8 @@ MonoBehaviour:
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\Microsoft.Extensions.Logging.Abstractions.dll\".\r\n        
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\Microsoft.Extensions.Options.dll\".\r\n        
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\Microsoft.Extensions.Primitives.dll\".\r\n        
-    Deleting file \"D:\\FishMMO Dev\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\Npgsql.dll\".\r\n        
-    Deleting file \"D:\\FishMMO Dev\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\Npgsql.EntityFrameworkCore.PostgreSQL.dll\".\r\n        
+    Deleting file \"D:\\FishMMO Dev\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\Microsoft.Data.SqlClient.dll\".\r\n        
+    Deleting file \"D:\\FishMMO Dev\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\Microsoft.EntityFrameworkCore.SqlServer.dll\".\r\n        
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\Pipelines.Sockets.Unofficial.dll\".\r\n        
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\StackExchange.Redis.dll\".\r\n        
     Deleting file \"D:\\FishMMO Dev\\FishMMO-Database\\FishMMO-DB-Migrator\\bin\\Release\\net8.0\\System.IO.Pipelines.dll\".\r\n        

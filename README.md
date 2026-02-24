@@ -104,7 +104,7 @@ Execute the installer to set up the necessary tools and the database.
     - **.NET 10 SDK**
     - **Visual Studio Build Tools** (with .NET Desktop, C++ workloads, MSVC compiler, and Windows 10 SDK)
     - **NGINX** (optional)
-    - **PostgreSQL**
+    - **SQL Server**
     - **The FishMMO Database** (including EFCore migrations)
 3.  Follow the on-screen prompts to complete the installation.
 

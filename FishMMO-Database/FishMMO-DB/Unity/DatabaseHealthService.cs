@@ -151,9 +151,9 @@ namespace FishMMO.Server.Database
 			isInitialized = true;
 
 			// Subscribe to slow query events (server decides what to do with them)
-			if (database.DbContextFactory is ISqlServerDbContextFactory npgsqlFactory)
+			if (database.DbContextFactory is ISqlServerDbContextFactory sqlServerFactory)
 			{
-				npgsqlFactory.PerformanceTracker.SlowQueryDetected += OnSlowQueryDetectedInternal;
+				sqlServerFactory.PerformanceTracker.SlowQueryDetected += OnSlowQueryDetectedInternal;
 			}
 
 			// Start monitoring
@@ -290,10 +290,10 @@ namespace FishMMO.Server.Database
 			try
 			{
 				// Query performance tracker metrics (per-operation)
-				if (database.DbContextFactory is ISqlServerDbContextFactory npgsqlFactory)
+				if (database.DbContextFactory is ISqlServerDbContextFactory sqlServerFactory)
 				{
-					var allMetrics = npgsqlFactory.PerformanceTracker.GetAllMetrics();
-					var poolMetrics = npgsqlFactory.PoolMetrics;
+					var allMetrics = sqlServerFactory.PerformanceTracker.GetAllMetrics();
+					var poolMetrics = sqlServerFactory.PoolMetrics;
 
 					if (allMetrics.Count > 0)
 					{
@@ -404,9 +404,9 @@ namespace FishMMO.Server.Database
 			StopMonitoring();
 
 			// Unsubscribe from slow query events
-			if (database?.DbContextFactory is ISqlServerDbContextFactory npgsqlFactory)
+			if (database?.DbContextFactory is ISqlServerDbContextFactory sqlServerFactory)
 			{
-				npgsqlFactory.PerformanceTracker.SlowQueryDetected -= OnSlowQueryDetectedInternal;
+				sqlServerFactory.PerformanceTracker.SlowQueryDetected -= OnSlowQueryDetectedInternal;
 			}
 
 			isInitialized = false;

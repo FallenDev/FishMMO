@@ -4,7 +4,7 @@ using FishNet.Managing;
 using FishNet.Transporting;
 using FishMMO.Database;
 using FishMMO.Database.Data;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

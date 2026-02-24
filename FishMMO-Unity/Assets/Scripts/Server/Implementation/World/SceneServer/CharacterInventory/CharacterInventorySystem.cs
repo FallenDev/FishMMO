@@ -5,7 +5,7 @@ using FishMMO.Logging;
 using FishMMO.Server.Core;
 using FishMMO.Server.Core.World.SceneServer;
 using FishMMO.Database.Data;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;

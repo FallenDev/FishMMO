@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using FishMMO.Database;
 using FishMMO.Database.Data;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 using FishMMO.Server.Core;
 using FishMMO.Server.Core.World.SceneServer;
 using FishMMO.Shared;

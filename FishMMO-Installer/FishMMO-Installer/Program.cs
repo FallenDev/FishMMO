@@ -9,7 +9,7 @@ namespace FishMMO.Installer
 	public static class Program
 	{
 		private static AppSettings appSettings = new AppSettings();
-		private static DatabaseProvider activeProvider = DatabaseProvider.PostgreSql;
+		private static DatabaseProvider activeProvider = DatabaseProvider.SqlServer;
 
 		public static async Task Main(string[] args)
 		{
