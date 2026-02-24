@@ -27,7 +27,7 @@ namespace FishMMO.DiscordBot.Modules
 
 				if (account != null)
 				{
-					await ReplyAsync($"Account Found: Name: {account.Name}, Created: {account.Created}");
+					await ReplyAsync($"Account Found: Name: {account.Name}, Created: {account.TimeCreated}");
 				}
 				else
 				{
