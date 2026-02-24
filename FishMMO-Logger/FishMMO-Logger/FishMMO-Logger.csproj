@@ -7,7 +7,7 @@
     <NoWarn>$(NoWarn);CS8618;CS8625;CS8600;CS8601;CS8603;CS8604;CS4014;CS1998</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="10.0.3" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 
   	<Target Name="Test" AfterTargets="Build">

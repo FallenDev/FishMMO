@@ -6,15 +6,12 @@ This project is a .NET Standard 2.1 class library that provides a collection of 
 
 The following NuGet packages are referenced in the project:
 
-- **EFCore.NamingConventions**: Adds naming convention support for Entity Framework Core.
 - **HtmlAgilityPack**: HTML parser for .NET.
 - **Humanizer**: Human-friendly string, date, and number formatting.
 - **Microsoft.Bcl.AsyncInterfaces**: Provides async interfaces for .NET Standard.
 - **Microsoft.EntityFrameworkCore**: Entity Framework Core ORM.
 - **Microsoft.EntityFrameworkCore.Abstractions**: Abstractions for EF Core.
-- **Microsoft.EntityFrameworkCore.Design**: Design-time tools for EF Core.
 - **Microsoft.EntityFrameworkCore.Relational**: Relational database support for EF Core.
-- **Microsoft.EntityFrameworkCore.Tools**: Tools for EF Core migrations and scaffolding.
 - **Microsoft.Extensions.Caching.Abstractions** / **Memory**: Caching primitives and in-memory cache.
 - **Microsoft.Extensions.Configuration** (+Abstractions, +Json): Configuration framework with JSON support.
 - **Microsoft.Extensions.DependencyInjection** (+Abstractions): Dependency injection framework.
@@ -23,18 +20,13 @@ The following NuGet packages are referenced in the project:
 - **Microsoft.Extensions.Primitives**: Change tracking primitives.
 - **SqlServer**: SQL Server database provider.
 - **Microsoft.EntityFrameworkCore.SqlServer**: SQL Server support for EF Core.
-- **OpenAI**: OpenAI API client.
 - **srp**: Secure Remote Password protocol implementation.
 - **StackExchange.Redis**: Redis client library.
 - **StackExchange.Redis.Extensions.Core**: Extensions for StackExchange.Redis.
-- **System.Collections.Immutable**: Immutable collection types.
 - **System.ComponentModel.Annotations**: Data annotation attributes.
-- **System.Diagnostics.DiagnosticSource**: Diagnostic instrumentation.
-- **System.IO.Hashing**: Hashing utilities.
 - **System.Runtime.CompilerServices.Unsafe**: Low-level compiler services.
 - **System.Text.Encodings.Web**: Web encoders.
 - **System.Text.Json**: High-performance JSON serialization.
-- **System.Threading.Channels**: High-performance producer/consumer data structures.
 
 ## Build & Usage
 
