@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
-using FishMMO.Database.Npgsql.Monitoring.Health;
+using FishMMO.Database.SqlServer.Monitoring.Health;
 
-namespace FishMMO.Database.Npgsql.Monitoring.Metrics
+namespace FishMMO.Database.SqlServer.Monitoring.Metrics
 {
 	/// <summary>
 	/// Tracks runtime connection pool metrics for monitoring and diagnostics.

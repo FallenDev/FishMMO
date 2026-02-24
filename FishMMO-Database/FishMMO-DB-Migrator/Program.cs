@@ -15,7 +15,7 @@ public static class Program
 			await using var dbContext = await factory.CreateDbContextAsync();
 			await dbContext.Database.MigrateAsync();
 
-			Console.WriteLine("SQL Server migrations applied successfully.");
+			Console.WriteLine("SqlServer migrations applied successfully.");
 			return 0;
 		}
 		catch (Exception ex)

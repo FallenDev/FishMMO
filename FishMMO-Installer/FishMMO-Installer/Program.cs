@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 namespace FishMMO.Installer
 {
 	/// <summary>
-	/// Console-based installer tool for FishMMO dependencies and SQL Server database setup.
+	/// Console-based installer tool for FishMMO dependencies and SqlServer database setup.
 	/// </summary>
 	public static class Program
 	{
@@ -51,7 +51,7 @@ namespace FishMMO.Installer
 			while (true)
 			{
 				Console.Clear();
-				Console.WriteLine("Welcome to the FishMMO Installer Tool (SQL Server mode).");
+				Console.WriteLine("Welcome to the FishMMO Installer Tool (SqlServer mode).");
 				Console.WriteLine("Press a key (0-9, A-B):");
 				Console.WriteLine("1 : Install DotNet");
 				Console.WriteLine("2 : Install Visual Studio Build Tools (Windows Only)");
@@ -60,8 +60,8 @@ namespace FishMMO.Installer
 				Console.WriteLine("5 : Install Unity Editor (+Modules)");
 				Console.WriteLine("6 : Install NGINX (Web Server/Reverse Proxy)");
 				Console.WriteLine("7 : Install/Renew Let's Encrypt Certificate (NGINX)");
-				Console.WriteLine("8 : Validate SQL Server connectivity");
-				Console.WriteLine("9 : Provision FishMMO SQL Server Database");
+				Console.WriteLine("8 : Validate SqlServer connectivity");
+				Console.WriteLine("9 : Provision FishMMO SqlServer Database");
 				Console.WriteLine("A : Create new database migration");
 				Console.WriteLine("B : Apply pending migrations");
 				Console.WriteLine("0 : Quit");

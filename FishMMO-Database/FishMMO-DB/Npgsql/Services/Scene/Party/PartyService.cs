@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using FishMMO.Database.Data;
 using FishMMO.Database.Exceptions;
-using FishMMO.Database.Npgsql.Entities;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Entities;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <summary>
 	/// Service for managing party entities in the database.
@@ -35,8 +35,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <summary>
 		/// Compiled query for checking party existence (hot path for party validations).
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<bool>> partyExistsQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long partyId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<bool>> partyExistsQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long partyId, CancellationToken ct) =>
 				context.Parties.Any(p => p.ID == partyId));
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <param name="dbContextFactory">DbContext factory for creating contexts.</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
-		public PartyService(INpgsqlDbContextFactory dbContextFactory)
+		public PartyService(ISqlServerDbContextFactory dbContextFactory)
 			: base(dbContextFactory)
 		{
 		}

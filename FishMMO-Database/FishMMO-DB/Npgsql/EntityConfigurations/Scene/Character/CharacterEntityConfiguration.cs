@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using FishMMO.Database.Data.Enums;
 
-namespace FishMMO.Database.Npgsql.Entities
+namespace FishMMO.Database.SqlServer.Entities
 {
 	/// <summary>
 	/// Entity configuration for <see cref="CharacterEntity"/>.

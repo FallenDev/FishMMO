@@ -1,4 +1,4 @@
-namespace FishMMO.Database.Npgsql.Entities
+namespace FishMMO.Database.SqlServer.Entities
 {
 	/// <summary>
 	/// Keyless entity used to map scalar <c>bigint</c> results from raw SQL.

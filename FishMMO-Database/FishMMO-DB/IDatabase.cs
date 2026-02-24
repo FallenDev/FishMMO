@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
-using FishMMO.Database.Npgsql;
-using FishMMO.Database.Npgsql.Monitoring.Health;
-using FishMMO.Database.Npgsql.Monitoring.Metrics;
+using FishMMO.Database.SqlServer;
+using FishMMO.Database.SqlServer.Monitoring.Health;
+using FishMMO.Database.SqlServer.Monitoring.Metrics;
 
 namespace FishMMO.Database
 {
@@ -43,7 +43,7 @@ namespace FishMMO.Database
 		/// Exposed for direct access when needed (e.g., custom queries, migrations, raw SQL).
 		/// In most cases, prefer using services from ServiceRegistry.
 		/// </summary>
-		INpgsqlDbContextFactory DbContextFactory { get; }
+		ISqlServerDbContextFactory DbContextFactory { get; }
 
 		/// <summary>
 		/// Shuts down the database orchestrator.

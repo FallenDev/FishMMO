@@ -1,13 +1,13 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FishMMO.Database.Npgsql.Monitoring.Metrics;
-using FishMMO.Database.Npgsql.Monitoring.Diagnostics;
+using FishMMO.Database.SqlServer.Monitoring.Metrics;
+using FishMMO.Database.SqlServer.Monitoring.Diagnostics;
 
-namespace FishMMO.Database.Npgsql
+namespace FishMMO.Database.SqlServer
 {
 	/// <summary>
-	/// Combined factory interface for creating NpgsqlDbContext instances with full monitoring capabilities.
+	/// Combined factory interface for creating SqlServerDbContext instances with full monitoring capabilities.
 	/// Extends both <see cref="IDbContextFactory"/> for core functionality and
 	/// <see cref="IDbContextFactoryMonitoring"/> for monitoring features.
 	/// </summary>
@@ -26,7 +26,7 @@ namespace FishMMO.Database.Npgsql
 	/// DbContext instances are short-lived and should not be pooled.
 	/// </para>
 	/// </remarks>
-	public interface INpgsqlDbContextFactory : IDbContextFactory, IDbContextFactoryMonitoring
+	public interface ISqlServerDbContextFactory : IDbContextFactory, IDbContextFactoryMonitoring
 	{
 	}
 }

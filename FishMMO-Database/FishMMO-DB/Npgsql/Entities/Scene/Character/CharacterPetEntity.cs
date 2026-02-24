@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace FishMMO.Database.Npgsql.Entities
+namespace FishMMO.Database.SqlServer.Entities
 {
 	public class CharacterPetEntity : IVersionedEntity
 	{

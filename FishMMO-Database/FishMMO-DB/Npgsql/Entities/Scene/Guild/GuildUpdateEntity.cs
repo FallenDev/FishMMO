@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FishMMO.Database.Npgsql.Entities
+namespace FishMMO.Database.SqlServer.Entities
 {
 	public class GuildUpdateEntity
 	{

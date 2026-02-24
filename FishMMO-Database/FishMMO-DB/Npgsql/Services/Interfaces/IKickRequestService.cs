@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FishMMO.Database.Data;
 
-namespace FishMMO.Database.Npgsql.Services.Interfaces
+namespace FishMMO.Database.SqlServer.Services.Interfaces
 {
 	/// <summary>
 	/// Service interface for kick request operations.

@@ -1,13 +1,13 @@
 using Discord.Commands;
-using FishMMO.Database.Npgsql; // Assuming NpgsqlDbContext is here
+using FishMMO.Database.SqlServer; // Assuming SqlServerDbContext is here
 
 namespace FishMMO.DiscordBot.Modules
 {
 	public class ChatModule : ModuleBase<SocketCommandContext>
 	{
-		private readonly NpgsqlDbContext dbContext;
+		private readonly SqlServerDbContext dbContext;
 
-		public ChatModule(NpgsqlDbContext dbContext)
+		public ChatModule(SqlServerDbContext dbContext)
 		{
 			this.dbContext = dbContext;
 		}

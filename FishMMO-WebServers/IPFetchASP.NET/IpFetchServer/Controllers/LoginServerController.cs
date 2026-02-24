@@ -1,29 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using FishMMO.Database.Npgsql;
-using FishMMO.Database.Npgsql.Entities;
+using FishMMO.Database.SqlServer;
+using FishMMO.Database.SqlServer.Entities;
 using FishMMO.Logging;
 
 
 /// <summary>
 /// Controller that exposes endpoints for retrieving available login servers.
-/// Uses an <see cref="NpgsqlDbContextFactory"/> to access the database and an
+/// Uses an <see cref="SqlServerDbContextFactory"/> to access the database and an
 /// <see cref="IMemoryCache"/> to cache results for improved performance.
 /// </summary>
 [ApiController]
 [Route("[controller]")]
 public class LoginServerController : ControllerBase
 {
-	private readonly NpgsqlDbContextFactory dbContextFactory;
+	private readonly SqlServerDbContextFactory dbContextFactory;
 	private readonly IMemoryCache memoryCache;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="LoginServerController"/> class.
 	/// </summary>
-	/// <param name="dbContextFactory">Factory used to create instances of <see cref="NpgsqlDbContext"/>.</param>
+	/// <param name="dbContextFactory">Factory used to create instances of <see cref="SqlServerDbContext"/>.</param>
 	/// <param name="memoryCache">In-memory cache used to store and retrieve cached login server lists.</param>
-	public LoginServerController(NpgsqlDbContextFactory dbContextFactory, IMemoryCache memoryCache)
+	public LoginServerController(SqlServerDbContextFactory dbContextFactory, IMemoryCache memoryCache)
 	{
 		this.dbContextFactory = dbContextFactory;
 		this.memoryCache = memoryCache;
@@ -47,7 +47,7 @@ public class LoginServerController : ControllerBase
 
 		if (!memoryCache.TryGetValue(cacheKey, out loginServers))
 		{
-			using NpgsqlDbContext dbContext = dbContextFactory.CreateDbContext();
+			using SqlServerDbContext dbContext = dbContextFactory.CreateDbContext();
 			if (dbContext == null)
 			{
 				await Log.Error("LoginServerController", "Failed to create DbContext for LoginServerController.");

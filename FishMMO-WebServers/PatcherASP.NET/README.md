@@ -140,7 +140,7 @@ Examples:
 ## External Dependencies
 
 - **FishMMO.Logging** - structured async logging.
-- **Npgsql** - PostgreSQL connection (for heartbeat/registration).
+- **SqlServer** - SQL Server connection (for heartbeat/registration).
 
 ## Requirements
 

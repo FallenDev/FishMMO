@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace FishMMO.Database.Npgsql.Monitoring.Metrics
+namespace FishMMO.Database.SqlServer.Monitoring.Metrics
 {
 	/// <summary>
 	/// Represents a summary of database operation metrics.

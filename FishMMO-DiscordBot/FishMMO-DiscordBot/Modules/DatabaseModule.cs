@@ -2,16 +2,16 @@ using System;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Microsoft.EntityFrameworkCore;
-using FishMMO.Database.Npgsql;
-using FishMMO.Database.Npgsql.Entities;
+using FishMMO.Database.SqlServer;
+using FishMMO.Database.SqlServer.Entities;
 
 namespace FishMMO.DiscordBot.Modules
 {
 	public class DatabaseModule : ModuleBase<SocketCommandContext>
 	{
-		private readonly NpgsqlDbContext dbContext;
+		private readonly SqlServerDbContext dbContext;
 
-		public DatabaseModule(NpgsqlDbContext dbContext)
+		public DatabaseModule(SqlServerDbContext dbContext)
 		{
 			this.dbContext = dbContext;
 		}

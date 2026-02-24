@@ -1,15 +1,15 @@
 using Discord.Commands;
 using System.Threading.Tasks;
-using FishMMO.Database.Npgsql;
+using FishMMO.Database.SqlServer;
 
 namespace FishMMO.DiscordBot.Modules
 {
 	[Group("general")]
 	public class GeneralModule : ModuleBase<SocketCommandContext>
 	{
-		private readonly NpgsqlDbContext dbContext;
+		private readonly SqlServerDbContext dbContext;
 
-		public GeneralModule(NpgsqlDbContext dbContext)
+		public GeneralModule(SqlServerDbContext dbContext)
 		{
 			this.dbContext = dbContext;
 		}

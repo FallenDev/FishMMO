@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using FishMMO.Database.Exceptions;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <summary>
 	/// Guards against nested database execution scopes within the same logical async flow.
@@ -27,13 +27,13 @@ namespace FishMMO.Database.Npgsql.Services
 		{
 			public int Depth;
 			public ExecutionMode Mode;
-			public NpgsqlDbContext? DbContext;
+			public SqlServerDbContext? DbContext;
 		}
 
 		private static readonly AsyncLocal<ScopeState?> State = new AsyncLocal<ScopeState?>();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool TryGetCurrentDbContext(out NpgsqlDbContext dbContext)
+		public static bool TryGetCurrentDbContext(out SqlServerDbContext dbContext)
 		{
 			var state = State.Value;
 			if (state?.DbContext != null)
@@ -55,7 +55,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <exception cref="DatabaseException">
 		/// Thrown when a write scope is requested while the ambient scope is read-only.
 		/// </exception>
-		public static ScopeToken Enter(NpgsqlDbContext? dbContext, bool isTransactionScope)
+		public static ScopeToken Enter(SqlServerDbContext? dbContext, bool isTransactionScope)
 		{
 			var requestedMode = isTransactionScope ? ExecutionMode.Transaction : ExecutionMode.Write;
 			var state = State.Value;
@@ -93,7 +93,7 @@ namespace FishMMO.Database.Npgsql.Services
 			return new ScopeToken();
 		}
 
-		public static ScopeToken EnterReadOnly(NpgsqlDbContext? dbContext)
+		public static ScopeToken EnterReadOnly(SqlServerDbContext? dbContext)
 		{
 			var state = State.Value;
 			if (state == null)

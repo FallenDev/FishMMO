@@ -2,29 +2,29 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using FishMMO.Database.Npgsql.Entities;
+using FishMMO.Database.SqlServer.Entities;
 
-namespace FishMMO.Database.Npgsql
+namespace FishMMO.Database.SqlServer
 {
 	/// <summary>
-	/// Entity Framework Core DbContext for the FishMMO PostgreSQL database.
+	/// Entity Framework Core DbContext for the FishMMO SqlServer database.
 	/// </summary>
 	/// <remarks>
-	/// This DbContext is created as a short-lived instance via <see cref="INpgsqlDbContextFactory"/>
+	/// This DbContext is created as a short-lived instance via <see cref="ISqlServerDbContextFactory"/>
 	/// and is not pooled.
 	/// </remarks>
-	public class NpgsqlDbContext : DbContext
+	public class SqlServerDbContext : DbContext
 	{
 		/// <summary>
 		/// Default schema name used when no schema is specified.
 		/// </summary>
-		public const string DefaultSchema = "public";
+		public const string DefaultSchema = "dbo";
 
 		private int disposed;
 
 		/// <summary>
 		/// Raised when this context is disposed.
-		/// Used by <see cref="NpgsqlDbContextFactory"/> to track active context count.
+		/// Used by <see cref="SqlServerDbContextFactory"/> to track active context count.
 		/// </summary>
 		public event EventHandler? Disposed;
 
@@ -34,11 +34,11 @@ namespace FishMMO.Database.Npgsql
 		public string Schema { get; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NpgsqlDbContext"/> class.
+		/// Initializes a new instance of the <see cref="SqlServerDbContext"/> class.
 		/// </summary>
 		/// <param name="options">The DbContext options.</param>
 		/// <param name="schema">The database schema to use; defaults to <see cref="DefaultSchema"/> when empty.</param>
-		public NpgsqlDbContext(DbContextOptions options, string schema) : base(options)
+		public SqlServerDbContext(DbContextOptions options, string schema) : base(options)
 		{
 			schema = string.IsNullOrWhiteSpace(schema) ? DefaultSchema : schema;
 
@@ -110,7 +110,7 @@ namespace FishMMO.Database.Npgsql
 			modelBuilder.HasDefaultSchema(Schema);
 
 			// Apply all configurations in the assembly
-			modelBuilder.ApplyConfigurationsFromAssembly(typeof(NpgsqlDbContext).Assembly);
+			modelBuilder.ApplyConfigurationsFromAssembly(typeof(SqlServerDbContext).Assembly);
 
 			ApplyLogicalVersionConventions(modelBuilder);
 			ApplyTimeCreatedConventions(modelBuilder, providerName);

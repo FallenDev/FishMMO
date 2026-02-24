@@ -21,10 +21,10 @@ Example override file:
 
 ```json
 {
-  "Npgsql": {
+  "SqlServer": {
     "Host": "127.0.0.1",
-    "Database": "fish_mmo_postgresql_dev",
-    "Username": "postgres",
+    "Database": "fish_mmo_sqlserver_dev",
+    "Username": "sqlserver",
     "Password": "dev_password"
   },
   "QueryPerformanceTracking": {
@@ -134,20 +134,20 @@ DOTNET_ENVIRONMENT=Production
 
 Use double underscores (`__`) for nested keys:
 
-- `Npgsql__Host`
-- `Npgsql__Port`
-- `Npgsql__Database`
-- `Npgsql__Username`
-- `Npgsql__Password`
-- `Npgsql__CommandTimeout`
+- `SqlServer__Host`
+- `SqlServer__Port`
+- `SqlServer__Database`
+- `SqlServer__Username`
+- `SqlServer__Password`
+- `SqlServer__CommandTimeout`
 
 Example (fish):
 
 ```fish
-set -x Npgsql__Host 10.0.0.25
-set -x Npgsql__Database fish_mmo_postgresql
-set -x Npgsql__Username postgres
-set -x Npgsql__Password super_secret
+set -x SqlServer__Host 10.0.0.25
+set -x SqlServer__Database fish_mmo_sqlserver
+set -x SqlServer__Username sqlserver
+set -x SqlServer__Password super_secret
 ```
 
 ---
@@ -188,14 +188,14 @@ if (!string.IsNullOrWhiteSpace(fishEnv))
 
 ---
 
-## Npgsql service usage examples
+## SqlServer service usage examples
 
 Services are resolved from `database.ServiceRegistry` by interface.
 
 ## Account service
 
 ```csharp
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 
 if (!database.ServiceRegistry.TryGet<IAccountService>(out var accountService))
 	throw new InvalidOperationException("IAccountService not registered.");
@@ -213,7 +213,7 @@ var account = loginResult.Data;
 ## Character service
 
 ```csharp
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 
 if (!database.ServiceRegistry.TryGet<ICharacterService>(out var characterService))
 	throw new InvalidOperationException("ICharacterService not registered.");
@@ -231,7 +231,7 @@ var character = characterResult.Data;
 ## Chat service
 
 ```csharp
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 using FishMMO.Database.Data.Enums;
 
 if (!database.ServiceRegistry.TryGet<IChatService>(out var chatService))
@@ -256,10 +256,10 @@ if (!persist.IsSuccess)
 
 ## Optional: explicit environment selection in code
 
-If you need direct factory creation, pass `IConfiguration` into `NpgsqlDbConfiguration`:
+If you need direct factory creation, pass `IConfiguration` into `SqlServerDbConfiguration`:
 
 ```csharp
-using FishMMO.Database.Npgsql;
+using FishMMO.Database.SqlServer;
 using Microsoft.Extensions.Configuration;
 
 var rootConfiguration = new ConfigurationBuilder()
@@ -269,12 +269,12 @@ var rootConfiguration = new ConfigurationBuilder()
 	.AddEnvironmentVariables()
 	.Build();
 
-var config = new NpgsqlDbConfiguration(
+var config = new SqlServerDbConfiguration(
 	rootConfiguration,
 	enableLogging: false,
 	commandTimeoutOverride: null);
 
-var factory = new NpgsqlDbContextFactory(config);
+var factory = new SqlServerDbContextFactory(config);
 ```
 
 ## Securing appsettings.json

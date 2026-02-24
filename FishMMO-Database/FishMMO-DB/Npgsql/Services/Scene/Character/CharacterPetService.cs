@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using FishMMO.Database.Data;
 using FishMMO.Database.Exceptions;
-using FishMMO.Database.Npgsql.Entities;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Entities;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <summary>
 	/// Service for managing character pet data in the database.
@@ -41,8 +41,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for checking whether a character exists and is not deleted.
 		/// Returns the character ID if active, otherwise 0.
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<long>> getActiveCharacterIdQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long characterId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<long>> getActiveCharacterIdQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long characterId, CancellationToken ct) =>
 				context.Characters
 					.AsNoTracking()
 					.Where(c => c.ID == characterId && !c.Deleted)
@@ -53,8 +53,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for retrieving character pet.
 		/// </summary>
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<CharacterPetEntity?>> getPetQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long characterId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<CharacterPetEntity?>> getPetQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long characterId, CancellationToken ct) =>
 				context.CharacterPets
 					.AsNoTracking()
 					.FirstOrDefault(p => p.CharacterID == characterId && !p.Deleted));
@@ -64,8 +64,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for retrieving spawned character pet.
 		/// </summary>
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<CharacterPetEntity?>> getSpawnedPetQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long characterId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<CharacterPetEntity?>> getSpawnedPetQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long characterId, CancellationToken ct) =>
 				context.CharacterPets
 					.AsNoTracking()
 					.FirstOrDefault(p => p.CharacterID == characterId && p.Spawned && !p.Deleted));
@@ -76,7 +76,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <param name="dbContextFactory">Factory for creating database contexts.</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
-		public CharacterPetService(INpgsqlDbContextFactory dbContextFactory) : base(dbContextFactory)
+		public CharacterPetService(ISqlServerDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}
 

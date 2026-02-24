@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using FishMMO.Database.Data;
 using FishMMO.Database.Data.Enums;
 using FishMMO.Database.Exceptions;
-using FishMMO.Database.Npgsql.Entities;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Entities;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <inheritdoc/>
 	public sealed class SceneService : BaseService<SceneEntity>, ISceneService
@@ -19,8 +19,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for retrieving character instance scene (hot path for scene loading).
 		/// </summary>
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type
-		private static readonly Func<NpgsqlDbContext, long, int, CancellationToken, Task<SceneEntity?>> getCharacterInstanceQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long characterId, int sceneType, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, int, CancellationToken, Task<SceneEntity?>> getCharacterInstanceQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long characterId, int sceneType, CancellationToken ct) =>
 				context.Scenes
 					.AsNoTracking()
 					.FirstOrDefault(s => s.CharacterID == characterId && s.SceneType == sceneType));
@@ -30,8 +30,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for retrieving scene by ID (hot path for scene loading).
 		/// </summary>
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<SceneEntity?>> fetchByIdQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long sceneId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<SceneEntity?>> fetchByIdQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long sceneId, CancellationToken ct) =>
 				context.Scenes
 					.AsNoTracking()
 					.FirstOrDefault(s => s.ID == sceneId));
@@ -40,8 +40,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <summary>
 		/// Compiled query for retrieving available scenes (hot path for scene matchmaking).
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, long, string, int, int, CancellationToken, Task<List<SceneEntity>>> fetchAvailableQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long worldServerId, string sceneName, int maxClients, int readyStatus, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, string, int, int, CancellationToken, Task<List<SceneEntity>>> fetchAvailableQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long worldServerId, string sceneName, int maxClients, int readyStatus, CancellationToken ct) =>
 				context.Scenes
 						.AsNoTracking()
 						.Where(s =>
@@ -54,8 +54,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <summary>
 		/// Compiled query for retrieving ready scenes (hot path for scene server queries).
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, long, int, CancellationToken, Task<List<SceneEntity>>> fetchReadyQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long worldServerId, int readyStatus, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, int, CancellationToken, Task<List<SceneEntity>>> fetchReadyQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long worldServerId, int readyStatus, CancellationToken ct) =>
 				context.Scenes
 					.AsNoTracking()
 					.Where(s => s.WorldServerID == worldServerId && s.SceneStatus == readyStatus)
@@ -66,7 +66,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <param name="dbContextFactory">DbContext factory for creating contexts.</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
-		public SceneService(INpgsqlDbContextFactory dbContextFactory)
+		public SceneService(ISqlServerDbContextFactory dbContextFactory)
 			: base(dbContextFactory)
 		{
 		}

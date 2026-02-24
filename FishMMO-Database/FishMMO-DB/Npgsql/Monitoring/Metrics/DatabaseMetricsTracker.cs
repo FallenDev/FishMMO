@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace FishMMO.Database.Npgsql.Monitoring.Metrics
+namespace FishMMO.Database.SqlServer.Monitoring.Metrics
 {
 	/// <summary>
 	/// Tracks database operation metrics in a thread-safe manner.

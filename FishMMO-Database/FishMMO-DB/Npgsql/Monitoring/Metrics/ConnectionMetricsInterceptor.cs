@@ -3,11 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace FishMMO.Database.Npgsql.Monitoring.Metrics
+namespace FishMMO.Database.SqlServer.Monitoring.Metrics
 {
 	/// <summary>
 	/// EF Core interceptor that tracks database connection open/close events.
-	/// This is used to approximate Npgsql pool utilization by measuring how many DbConnections
+	/// This is used to approximate SqlServer pool utilization by measuring how many DbConnections
 	/// are currently open (checked out from the pool).
 	/// </summary>
 	public sealed class ConnectionMetricsInterceptor : DbConnectionInterceptor

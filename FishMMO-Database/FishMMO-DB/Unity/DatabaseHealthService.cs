@@ -1,9 +1,9 @@
 /*using System;
 using UnityEngine;
 using FishMMO.Database;
-using FishMMO.Database.Npgsql.Monitoring.Health;
-using FishMMO.Database.Npgsql.Monitoring.Metrics;
-using FishMMO.Database.Npgsql.Monitoring.Diagnostics;
+using FishMMO.Database.SqlServer.Monitoring.Health;
+using FishMMO.Database.SqlServer.Monitoring.Metrics;
+using FishMMO.Database.SqlServer.Monitoring.Diagnostics;
 
 namespace FishMMO.Server.Database
 {
@@ -151,7 +151,7 @@ namespace FishMMO.Server.Database
 			isInitialized = true;
 
 			// Subscribe to slow query events (server decides what to do with them)
-			if (database.DbContextFactory is Npgsql.INpgsqlDbContextFactory npgsqlFactory)
+			if (database.DbContextFactory is ISqlServerDbContextFactory npgsqlFactory)
 			{
 				npgsqlFactory.PerformanceTracker.SlowQueryDetected += OnSlowQueryDetectedInternal;
 			}
@@ -290,7 +290,7 @@ namespace FishMMO.Server.Database
 			try
 			{
 				// Query performance tracker metrics (per-operation)
-				if (database.DbContextFactory is Npgsql.INpgsqlDbContextFactory npgsqlFactory)
+				if (database.DbContextFactory is ISqlServerDbContextFactory npgsqlFactory)
 				{
 					var allMetrics = npgsqlFactory.PerformanceTracker.GetAllMetrics();
 					var poolMetrics = npgsqlFactory.PoolMetrics;
@@ -404,7 +404,7 @@ namespace FishMMO.Server.Database
 			StopMonitoring();
 
 			// Unsubscribe from slow query events
-			if (database?.DbContextFactory is Npgsql.INpgsqlDbContextFactory npgsqlFactory)
+			if (database?.DbContextFactory is ISqlServerDbContextFactory npgsqlFactory)
 			{
 				npgsqlFactory.PerformanceTracker.SlowQueryDetected -= OnSlowQueryDetectedInternal;
 			}

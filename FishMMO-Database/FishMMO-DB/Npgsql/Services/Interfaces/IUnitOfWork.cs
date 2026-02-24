@@ -3,13 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using FishMMO.Database;
 
-namespace FishMMO.Database.Npgsql.Services.Interfaces
+namespace FishMMO.Database.SqlServer.Services.Interfaces
 {
 	/// <summary>
 	/// Represents a unit of work for coordinating multiple service calls into a single database transaction.
 	/// </summary>
 	/// <remarks>
-	/// A unit of work creates a shared <c>NpgsqlDbContext</c> and an explicit database transaction.
+	/// A unit of work creates a shared <c>SqlServerDbContext</c> and an explicit database transaction.
 	/// Services invoked within the unit of work reuse the ambient context and do not commit independently.
 	/// The transaction is finalized only when <see cref="CommitAsync"/> or <see cref="RollbackAsync"/> is called.
 	/// </remarks>

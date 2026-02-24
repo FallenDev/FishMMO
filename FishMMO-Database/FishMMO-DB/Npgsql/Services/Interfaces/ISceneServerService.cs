@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FishMMO.Database.Data;
-using FishMMO.Database.Npgsql.Services.Interfaces.Actions;
+using FishMMO.Database.SqlServer.Services.Interfaces.Actions;
 
-namespace FishMMO.Database.Npgsql.Services.Interfaces
+namespace FishMMO.Database.SqlServer.Services.Interfaces
 {
 	/// <summary>
 	/// Service interface for scene server registration and management operations.
@@ -48,7 +48,7 @@ namespace FishMMO.Database.Npgsql.Services.Interfaces
 		/// </returns>
 		/// <remarks>
 		/// Uses FromSqlRaw with RETURNING clause and execution strategy wrapping to ensure transient database
-		/// failures are automatically retried. Uses PostgreSQL ON CONFLICT for atomic UPSERT with full data return.
+		/// failures are automatically retried. Uses SqlServer ON CONFLICT for atomic UPSERT with full data return.
 		/// </remarks>
 		Task<DatabaseResult<(long ServerId, SceneServerData ServerData)>> PersistAsync(
 			string name,

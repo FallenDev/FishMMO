@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
-using FishMMO.Database.Npgsql;
+using FishMMO.Database.SqlServer;
 using FishMMO.DiscordBot.Services;
 using Microsoft.Extensions.Logging;
 
@@ -79,12 +79,12 @@ namespace FishMMO.DiscordBot
 					}));
 					services.AddSingleton<CommandService>();
 
-					// Add NpgsqlDbContext and its factory
+					// Add SqlServerDbContext and its factory
 					// Ensures that DbContext instances can be created correctly
-					services.AddSingleton<NpgsqlDbContextFactory>();
-					services.AddTransient<NpgsqlDbContext>(provider => // Transient lifetime is usually good for operations per request/task
+					services.AddSingleton<SqlServerDbContextFactory>();
+					services.AddTransient<SqlServerDbContext>(provider => // Transient lifetime is usually good for operations per request/task
 					{
-						var factory = provider.GetRequiredService<NpgsqlDbContextFactory>();
+						var factory = provider.GetRequiredService<SqlServerDbContextFactory>();
 						return factory.CreateDbContext();
 					});
 

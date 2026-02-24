@@ -4,7 +4,7 @@ using Microsoft.Data.SqlClient;
 namespace FishMMO.Installer
 {
 	/// <summary>
-	/// Handles SQL Server provisioning and FishMMO database setup.
+	/// Handles SqlServer provisioning and FishMMO database setup.
 	/// </summary>
 	public static class SqlServerInstaller
 	{
@@ -25,8 +25,8 @@ namespace FishMMO.Installer
 
 		public static async Task InstallSqlServer(AppSettings appSettings)
 		{
-			InstallerProcessHelper.Log("SQL Server installation is environment-specific and not yet fully automated.");
-			InstallerProcessHelper.Log("Ensure SQL Server is installed and reachable, then continue with FishMMO DB setup.");
+			InstallerProcessHelper.Log("SqlServer installation is environment-specific and not yet fully automated.");
+			InstallerProcessHelper.Log("Ensure SqlServer is installed and reachable, then continue with FishMMO DB setup.");
 			await ValidateConnection(appSettings.SqlServer);
 		}
 
@@ -42,11 +42,13 @@ namespace FishMMO.Installer
 IF DB_ID(N'{dbName}') IS NULL
 BEGIN
     CREATE DATABASE [{dbName}]
-END";
+END
+
+ALTER DATABASE [{dbName}] SET COMPATIBILITY_LEVEL = 160;";
 
 			using var command = new SqlCommand(createDbSql, connection);
 			await command.ExecuteNonQueryAsync();
-			InstallerProcessHelper.Log($"SQL Server database '{appSettings.SqlServer.Database}' is ready.");
+			InstallerProcessHelper.Log($"SqlServer database '{appSettings.SqlServer.Database}' is ready with compatibility level 160 (SQL Server 2022).");
 		}
 
 		private static async Task ValidateConnection(SqlServerSettings settings)
@@ -55,11 +57,11 @@ END";
 			{
 				using var connection = new SqlConnection(BuildMasterConnectionString(settings));
 				await connection.OpenAsync();
-				InstallerProcessHelper.Log("SQL Server connectivity check passed.");
+				InstallerProcessHelper.Log("SqlServer connectivity check passed.");
 			}
 			catch (Exception ex)
 			{
-				InstallerProcessHelper.Log($"Unable to connect to SQL Server: {ex.Message}");
+				InstallerProcessHelper.Log($"Unable to connect to SqlServer: {ex.Message}");
 				throw;
 			}
 		}

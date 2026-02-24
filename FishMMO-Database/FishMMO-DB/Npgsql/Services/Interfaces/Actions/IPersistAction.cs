@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FishMMO.Database.Npgsql.Services.Interfaces.Actions
+namespace FishMMO.Database.SqlServer.Services.Interfaces.Actions
 {
 	/// <summary>
 	/// Defines a persist operation.

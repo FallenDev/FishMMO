@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using FishMMO.Database.Npgsql;
-using FishMMO.Database.Npgsql.Entities;
+using FishMMO.Database.SqlServer;
+using FishMMO.Database.SqlServer.Entities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FishMMO.DiscordBot.Services
@@ -108,7 +108,7 @@ namespace FishMMO.DiscordBot.Services
 						using (var scope = serviceProvider.CreateScope()) // Use serviceProvider to create scope
 						{
 							// Resolve DbContext from the scope
-							var scopedDbContext = scope.ServiceProvider.GetRequiredService<NpgsqlDbContext>();
+							var scopedDbContext = scope.ServiceProvider.GetRequiredService<SqlServerDbContext>();
 							var scopedLogger = scope.ServiceProvider.GetRequiredService<ILogger<CommandHandlingService>>();
 
 							try

@@ -2,18 +2,18 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Storage;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <summary>
-	/// Npgsql implementation of <see cref="IUnitOfWorkService"/>.
+	/// SqlServer implementation of <see cref="IUnitOfWorkService"/>.
 	/// </summary>
 	/// <remarks>
 	/// <para>
 	/// This service begins an explicit database transaction and establishes an ambient
-	/// <see cref="NpgsqlDbContext"/> for the current logical async flow.
-	/// Any Npgsql service method invoked inside the unit of work will reuse the ambient context
+	/// <see cref="SqlServerDbContext"/> for the current logical async flow.
+	/// Any SqlServer service method invoked inside the unit of work will reuse the ambient context
 	/// via <c>DatabaseExecutionScope</c> and therefore participate in the same transaction.
 	/// </para>
 	/// <para>
@@ -27,16 +27,16 @@ namespace FishMMO.Database.Npgsql.Services
 	/// </remarks>
 	public sealed class UnitOfWorkService : IUnitOfWorkService
 	{
-		private sealed class NpgsqlUnitOfWork : IUnitOfWork
+		private sealed class SqlServerUnitOfWork : IUnitOfWork
 		{
-			private readonly NpgsqlDbContext dbContext;
+			private readonly SqlServerDbContext dbContext;
 			private readonly IDbContextTransaction transaction;
 			private readonly DatabaseExecutionScope.ScopeToken scopeToken;
 			private bool isCompleted;
 			private bool isDisposed;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="NpgsqlUnitOfWork"/> class.
+			/// Initializes a new instance of the <see cref="SqlServerUnitOfWork"/> class.
 			/// </summary>
 			/// <param name="dbContext">The ambient EF Core context used for all operations in the unit of work.</param>
 			/// <param name="transaction">The explicit transaction associated with <paramref name="dbContext"/>.</param>
@@ -44,7 +44,7 @@ namespace FishMMO.Database.Npgsql.Services
 			/// <exception cref="ArgumentNullException">
 			/// Thrown when <paramref name="dbContext"/> or <paramref name="transaction"/> is null.
 			/// </exception>
-			public NpgsqlUnitOfWork(NpgsqlDbContext dbContext, IDbContextTransaction transaction, DatabaseExecutionScope.ScopeToken scopeToken)
+			public SqlServerUnitOfWork(SqlServerDbContext dbContext, IDbContextTransaction transaction, DatabaseExecutionScope.ScopeToken scopeToken)
 			{
 				this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 				this.transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
@@ -194,14 +194,14 @@ namespace FishMMO.Database.Npgsql.Services
 
 		}
 
-		private readonly INpgsqlDbContextFactory dbContextFactory;
+		private readonly ISqlServerDbContextFactory dbContextFactory;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnitOfWorkService"/> class.
 		/// </summary>
 		/// <param name="dbContextFactory">Factory for creating database contexts.</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
-		public UnitOfWorkService(INpgsqlDbContextFactory dbContextFactory)
+		public UnitOfWorkService(ISqlServerDbContextFactory dbContextFactory)
 		{
 			this.dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
 		}
@@ -220,7 +220,7 @@ namespace FishMMO.Database.Npgsql.Services
 					"A unit of work cannot be started inside an ambient database execution scope.");
 			}
 
-			NpgsqlDbContext context;
+			SqlServerDbContext context;
 			try
 			{
 				context = dbContextFactory.CreateDbContext();
@@ -250,7 +250,7 @@ namespace FishMMO.Database.Npgsql.Services
 				return DatabaseResult<IUnitOfWork>.Failure(DatabaseErrorCodes.DatabaseError, $"Failed to begin transaction: {ex.Message}", isTransient: true);
 			}
 
-			return DatabaseResult<IUnitOfWork>.Success(new NpgsqlUnitOfWork(context, transaction, scopeToken));
+			return DatabaseResult<IUnitOfWork>.Success(new SqlServerUnitOfWork(context, transaction, scopeToken));
 		}
 	}
 }

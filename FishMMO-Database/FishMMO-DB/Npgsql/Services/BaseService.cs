@@ -6,12 +6,12 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using FishMMO.Database.Npgsql.Entities;
-using FishMMO.Database.Npgsql.Monitoring.Diagnostics;
-using FishMMO.Database.Npgsql.Monitoring.Metrics;
+using FishMMO.Database.SqlServer.Entities;
+using FishMMO.Database.SqlServer.Monitoring.Diagnostics;
+using FishMMO.Database.SqlServer.Monitoring.Metrics;
 using FishMMO.Database.Exceptions;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <summary>
 	/// Base class for database services that execute EF Core operations with consistent
@@ -30,7 +30,7 @@ namespace FishMMO.Database.Npgsql.Services
 	/// <description>
 	/// <see cref="ExecuteTransactionAsync(Func{Task}, CancellationToken)"/> and
 	/// <see cref="ExecuteTransactionAsync{TResult}(Func{Task{TResult}},string,CancellationToken)"/>
-	/// create a fresh <see cref="NpgsqlDbContext"/>, begin an explicit transaction, execute the delegate,
+	/// create a fresh <see cref="SqlServerDbContext"/>, begin an explicit transaction, execute the delegate,
 	/// then call <see cref="DbContext.SaveChangesAsync(CancellationToken)"/> and commit.
 	/// </description>
 	/// </item>
@@ -38,7 +38,7 @@ namespace FishMMO.Database.Npgsql.Services
 	/// <description>
 	/// <see cref="ExecuteWriteAsync(Func{Task},string,CancellationToken)"/> and
 	/// <see cref="ExecuteWriteAsync{TResult}(Func{Task{TResult}},string,CancellationToken)"/>
-	/// create a fresh <see cref="NpgsqlDbContext"/>, execute the delegate, then call <see cref="DbContext.SaveChangesAsync(CancellationToken)"/>
+	/// create a fresh <see cref="SqlServerDbContext"/>, execute the delegate, then call <see cref="DbContext.SaveChangesAsync(CancellationToken)"/>
 	/// without starting an explicit transaction.
 	/// </description>
 	/// </item>
@@ -46,7 +46,7 @@ namespace FishMMO.Database.Npgsql.Services
 	/// <description>
 	/// <see cref="ExecuteReadAsync(Func{Task},string,CancellationToken)"/> and
 	/// <see cref="ExecuteReadAsync{TResult}(Func{Task{TResult}},string,CancellationToken)"/>
-	/// create a fresh <see cref="NpgsqlDbContext"/> but do not start an explicit transaction and do not call SaveChanges.
+	/// create a fresh <see cref="SqlServerDbContext"/> but do not start an explicit transaction and do not call SaveChanges.
 	/// </description>
 	/// </item>
 	/// </list>
@@ -58,12 +58,12 @@ namespace FishMMO.Database.Npgsql.Services
 	/// </para>
 	/// <para>
 	/// <b>Ambient Scope Execution (inside an existing Unit of Work):</b> When an operation detects an active
-	/// <see cref="DatabaseExecutionScope"/>, it reuses the ambient <see cref="NpgsqlDbContext"/> and does NOT retry
+	/// <see cref="DatabaseExecutionScope"/>, it reuses the ambient <see cref="SqlServerDbContext"/> and does NOT retry
 	/// on transient failures. This is by design for the following reasons:
 	/// </para>
 	/// <list type="number">
 	/// <item><description>
-	/// <b>Transaction State Corruption:</b> PostgreSQL aborts the entire transaction on most transient failures.
+	/// <b>Transaction State Corruption:</b> SqlServer aborts the entire transaction on most transient failures.
 	/// The connection and transaction become unusable, making retry with the same context impossible.
 	/// </description></item>
 	/// <item><description>
@@ -84,18 +84,18 @@ namespace FishMMO.Database.Npgsql.Services
 	public abstract class BaseService<TEntity> where TEntity : class
 	{
 		/// <summary>
-		/// Factory used to create new <see cref="NpgsqlDbContext"/> instances.
+		/// Factory used to create new <see cref="SqlServerDbContext"/> instances.
 		/// </summary>
 		/// <remarks>
 		/// The factory is expected to be thread-safe and to return independent contexts.
 		/// Each retry attempt uses a new context instance.
 		/// </remarks>
-		private readonly INpgsqlDbContextFactory dbContextFactory;
+		private readonly ISqlServerDbContextFactory dbContextFactory;
 
 		/// <summary>
-		/// Gets the factory used to create new <see cref="NpgsqlDbContext"/> instances.
+		/// Gets the factory used to create new <see cref="SqlServerDbContext"/> instances.
 		/// </summary>
-		protected INpgsqlDbContextFactory DbContextFactory => dbContextFactory;
+		protected ISqlServerDbContextFactory DbContextFactory => dbContextFactory;
 
 		/// <summary>
 		/// Database table name for <typeparamref name="TEntity"/>, resolved from EF Core model metadata.
@@ -106,7 +106,7 @@ namespace FishMMO.Database.Npgsql.Services
 		protected string TableName { get; }
 
 		/// <summary>
-		/// Gets the connection pool metrics exposed by the current <see cref="INpgsqlDbContextFactory"/>.
+		/// Gets the connection pool metrics exposed by the current <see cref="ISqlServerDbContextFactory"/>.
 		/// </summary>
 		protected ConnectionPoolMetrics PoolMetrics => DbContextFactory.PoolMetrics;
 
@@ -181,7 +181,7 @@ namespace FishMMO.Database.Npgsql.Services
 					var dupMessage = string.IsNullOrWhiteSpace(ex.Message) ? DuplicateReplayDefaultMessage : ex.Message;
 					return (DatabaseErrorCodes.DuplicateReplay, dupMessage, false);
 				default:
-					var sqlState = TryGetPostgresSqlState(ex);
+					var sqlState = TryGetSqlServerSqlState(ex);
 					return MapFinalException(ex, sqlState);
 			}
 		}
@@ -235,7 +235,7 @@ namespace FishMMO.Database.Npgsql.Services
 				return null;
 			}
 
-			var originalSqlState = TryGetPostgresSqlState(originalException);
+			var originalSqlState = TryGetSqlServerSqlState(originalException);
 			var originalOutcome = ClassifyException(originalException, originalSqlState);
 			var (originalCode, originalMessage, _) = MapExceptionOutcome(originalException, originalOutcome);
 
@@ -249,7 +249,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Checks if an exception should trigger a retry attempt.
 		/// </summary>
 		/// <param name="ex">The exception that occurred.</param>
-		/// <param name="sqlState">The PostgreSQL SQLSTATE code if available.</param>
+		/// <param name="sqlState">The SqlServer SQLSTATE code if available.</param>
 		/// <param name="attempt">Current retry attempt number.</param>
 		/// <returns>True if the exception is transient and retry attempts remain; otherwise false.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -279,7 +279,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <param name="contextFactory">Factory used to create new EF Core contexts.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="contextFactory"/> is null.</exception>
-		protected BaseService(INpgsqlDbContextFactory contextFactory)
+		protected BaseService(ISqlServerDbContextFactory contextFactory)
 		{
 			dbContextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));
 
@@ -321,7 +321,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <see cref="StaleStateException"/> is treated as a logical conflict and is not retried.
 		/// </remarks>
 		protected async Task<DatabaseResult> ExecuteTransactionAsync(
-			Func<NpgsqlDbContext, Task> action,
+			Func<SqlServerDbContext, Task> action,
 			bool saveChanges = true,
 			[CallerMemberName] string? operationName = null,
 			CancellationToken cancellationToken = default)
@@ -363,7 +363,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <see cref="StaleStateException"/> is treated as a logical conflict and is not retried.
 		/// </remarks>
 		protected async Task<DatabaseResult<TResult>> ExecuteTransactionAsync<TResult>(
-			Func<NpgsqlDbContext, Task<TResult>> action,
+			Func<SqlServerDbContext, Task<TResult>> action,
 			bool saveChanges = true,
 			[CallerMemberName] string? operationName = null,
 			CancellationToken cancellationToken = default)
@@ -414,14 +414,14 @@ namespace FishMMO.Database.Npgsql.Services
 							return DatabaseResult<TResult>.Failure(rollbackError.Value.ErrorCode, rollbackError.Value.ErrorMessage);
 						}
 
-						var sqlState = TryGetPostgresSqlState(ex);
+						var sqlState = TryGetSqlServerSqlState(ex);
 						var outcome = ClassifyException(ex, sqlState);
 						return CreateExceptionResult<TResult>(ex, outcome);
 					}
 				}
 				catch (Exception ex)
 				{
-					var sqlState = TryGetPostgresSqlState(ex);
+					var sqlState = TryGetSqlServerSqlState(ex);
 					return HandleFinalException<TResult>(ex, sqlState);
 				}
 			}
@@ -433,7 +433,7 @@ namespace FishMMO.Database.Npgsql.Services
 				var stopwatch = PerformanceTracker?.StartTracking();
 				var attemptStartUtc = stopwatch == null ? DateTime.UtcNow : default;
 
-				NpgsqlDbContext? context = null;
+				SqlServerDbContext? context = null;
 				DatabaseExecutionScope.ScopeToken scope = default;
 				var scopeEntered = false;
 				IDbContextTransaction? transaction = null;
@@ -523,7 +523,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <see cref="StaleStateException"/> is treated as a logical conflict and is not retried.
 		/// </remarks>
 		protected async Task<DatabaseResult> ExecuteWriteAsync(
-			Func<NpgsqlDbContext, Task> action,
+			Func<SqlServerDbContext, Task> action,
 			bool saveChanges = true,
 			[CallerMemberName] string? operationName = null,
 			CancellationToken cancellationToken = default)
@@ -563,7 +563,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <see cref="StaleStateException"/> is treated as a logical conflict and is not retried.
 		/// </remarks>
 		protected async Task<DatabaseResult<TResult>> ExecuteWriteAsync<TResult>(
-			Func<NpgsqlDbContext, Task<TResult>> action,
+			Func<SqlServerDbContext, Task<TResult>> action,
 			bool saveChanges = true,
 			[CallerMemberName] string? operationName = null,
 			CancellationToken cancellationToken = default)
@@ -607,21 +607,21 @@ namespace FishMMO.Database.Npgsql.Services
 							catch (Exception rbEx)
 							{
 								// Rollback failed - include in error result
-								var sqlStateRb = TryGetPostgresSqlState(ex);
+								var sqlStateRb = TryGetSqlServerSqlState(ex);
 								var (originalCode, originalMessage, _) = MapExceptionOutcome(ex, ClassifyException(ex, sqlStateRb));
 								return DatabaseResult<TResult>.Failure(
 									DatabaseErrorCodes.RollbackFailed,
 									$"{RollbackFailedMessage} Original error: {originalCode} - {originalMessage}. Rollback error: {rbEx.Message}");
 							}
 						}
-						var sqlState = TryGetPostgresSqlState(ex);
+						var sqlState = TryGetSqlServerSqlState(ex);
 						var outcome = ClassifyException(ex, sqlState);
 						return CreateExceptionResult<TResult>(ex, outcome);
 					}
 				}
 				catch (Exception ex)
 				{
-					var sqlState = TryGetPostgresSqlState(ex);
+					var sqlState = TryGetSqlServerSqlState(ex);
 					return HandleFinalException<TResult>(ex, sqlState);
 				}
 			}
@@ -633,7 +633,7 @@ namespace FishMMO.Database.Npgsql.Services
 				var stopwatch = PerformanceTracker?.StartTracking();
 				var attemptStartUtc = stopwatch == null ? DateTime.UtcNow : default;
 
-				NpgsqlDbContext? context = null;
+				SqlServerDbContext? context = null;
 				DatabaseExecutionScope.ScopeToken scope = default;
 				var scopeEntered = false;
 
@@ -689,7 +689,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Prefer <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}(Linq.IQueryable{TEntity})"/> for pure reads.
 		/// </remarks>
 		protected async Task<DatabaseResult> ExecuteReadAsync(
-			Func<NpgsqlDbContext, Task> action,
+			Func<SqlServerDbContext, Task> action,
 			[CallerMemberName] string? operationName = null,
 			CancellationToken cancellationToken = default)
 		{
@@ -722,7 +722,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Prefer <see cref="EntityFrameworkQueryableExtensions.AsNoTracking{TEntity}(Linq.IQueryable{TEntity})"/> for pure reads.
 		/// </remarks>
 		protected async Task<DatabaseResult<TResult>> ExecuteReadAsync<TResult>(
-			Func<NpgsqlDbContext, Task<TResult>> action,
+			Func<SqlServerDbContext, Task<TResult>> action,
 			[CallerMemberName] string? operationName = null,
 			CancellationToken cancellationToken = default)
 		{
@@ -738,7 +738,7 @@ namespace FishMMO.Database.Npgsql.Services
 				}
 				catch (Exception ex)
 				{
-					var sqlState = TryGetPostgresSqlState(ex);
+					var sqlState = TryGetSqlServerSqlState(ex);
 					return HandleFinalException<TResult>(ex, sqlState);
 				}
 			}
@@ -807,7 +807,7 @@ namespace FishMMO.Database.Npgsql.Services
 
 		private string? RecordFailureAndGetSqlState(Exception ex, string resolvedOperationName, Stopwatch? stopwatch, DateTime attemptStartUtc)
 		{
-			var sqlState = TryGetPostgresSqlState(ex);
+			var sqlState = TryGetSqlServerSqlState(ex);
 			RecordOperationAttempt(resolvedOperationName, stopwatch, attemptStartUtc, success: false);
 			RecordPoolMetricsForFailure(sqlState);
 			return sqlState;
@@ -816,7 +816,7 @@ namespace FishMMO.Database.Npgsql.Services
 		private void RecordPoolMetricsForFailure(string? sqlState)
 		{
 			// If the failure indicates "too many connections", count it as pool exhaustion.
-			if (sqlState == PostgresSqlState.TooManyConnections)
+			if (sqlState == SqlServerSqlState.TooManyConnections)
 			{
 				PoolMetrics?.RecordPoolExhaustion();
 			}
@@ -831,7 +831,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <typeparam name="TResult">Result type.</typeparam>
 		/// <param name="ex">The exception.</param>
-		/// <param name="sqlState">PostgreSQL SQLSTATE, if available.</param>
+		/// <param name="sqlState">SqlServer SQLSTATE, if available.</param>
 		/// <returns>A failure result.</returns>
 		private DatabaseResult<TResult> HandleFinalException<TResult>(Exception ex, string? sqlState)
 		{
@@ -843,7 +843,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Maps a terminal (non-retryable) exception into a standardized failure code/message/transience tuple.
 		/// </summary>
 		/// <param name="ex">The exception.</param>
-		/// <param name="sqlState">PostgreSQL SQLSTATE, if available.</param>
+		/// <param name="sqlState">SqlServer SQLSTATE, if available.</param>
 		/// <returns>A tuple of (Code, Message, IsTransient).</returns>
 		private static (string Code, string Message, bool IsTransient) MapFinalException(Exception ex, string? sqlState)
 		{
@@ -873,22 +873,22 @@ namespace FishMMO.Database.Npgsql.Services
 				return (DatabaseErrorCodes.InvalidConfiguration, "Database authentication configuration is invalid.", false);
 			}
 
-			if (sqlState == PostgresSqlState.UniqueViolation)
+			if (sqlState == SqlServerSqlState.UniqueViolation)
 			{
 				return (DatabaseErrorCodes.UniqueViolation, "The record already exists.", false);
 			}
 
-			if (sqlState == PostgresSqlState.ForeignKeyViolation)
+			if (sqlState == SqlServerSqlState.ForeignKeyViolation)
 			{
 				return (DatabaseErrorCodes.ForeignKeyViolation, "A referenced record was not found.", false);
 			}
 
-			if (sqlState == PostgresSqlState.NotNullViolation)
+			if (sqlState == SqlServerSqlState.NotNullViolation)
 			{
 				return (DatabaseErrorCodes.NotNullViolation, "A required field was missing.", false);
 			}
 
-			if (sqlState == PostgresSqlState.CheckViolation)
+			if (sqlState == SqlServerSqlState.CheckViolation)
 			{
 				return (DatabaseErrorCodes.CheckViolation, "One or more values were invalid.", false);
 			}
@@ -916,10 +916,10 @@ namespace FishMMO.Database.Npgsql.Services
 			SqlStateHelper.IsTransientDatabaseFailure(exception, sqlState);
 
 		/// <summary>
-		/// Extracts the PostgreSQL SQLSTATE from an exception chain, if present.
+		/// Extracts the SqlServer SQLSTATE from an exception chain, if present.
 		/// </summary>
-		private static string? TryGetPostgresSqlState(Exception exception) =>
-			SqlStateHelper.TryGetPostgresSqlState(exception);
+		private static string? TryGetSqlServerSqlState(Exception exception) =>
+			SqlStateHelper.TryGetSqlServerSqlState(exception);
 
 		/// <summary>
 		/// Determines whether a SQLSTATE represents a connection-level failure.
@@ -955,7 +955,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// was rejected by version gating (e.g., <c>EXCLUDED.version &lt;= table.version</c>).
 		/// </exception>
 		protected static async Task ExecuteBulkUpsertAsync(
-			NpgsqlDbContext dbContext,
+			SqlServerDbContext dbContext,
 			string sql,
 			int expectedRowsAffected,
 			object[] parameters,

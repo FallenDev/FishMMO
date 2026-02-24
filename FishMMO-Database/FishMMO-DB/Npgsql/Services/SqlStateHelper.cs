@@ -1,49 +1,27 @@
 using System;
-using System.Runtime.CompilerServices;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
-	/// <summary>
-	/// Utility methods for PostgreSQL SQLSTATE code classification.
-	/// </summary>
 	internal static class SqlStateHelper
 	{
-		/// <summary>
-		/// Extracts the PostgreSQL SQLSTATE from an exception chain, if present.
-		/// </summary>
-		/// <param name="exception">The exception to inspect.</param>
-		/// <returns>The SQLSTATE code, or null if not found.</returns>
-		public static string? TryGetPostgresSqlState(Exception exception)
+		public static string? TryGetSqlServerSqlState(Exception exception)
 		{
 			for (var current = exception; current != null; current = current.InnerException)
 			{
-				if (current is PostgresException pgEx) return pgEx.SqlState;
+				if (current is SqlException sqlEx)
+					return sqlEx.Number.ToString();
 			}
 			return null;
 		}
 
-		/// <summary>
-		/// Determines whether an exception represents a transient failure that is safe to retry.
-		/// </summary>
-		/// <param name="exception">The exception.</param>
-		/// <param name="sqlState">The PostgreSQL SQLSTATE, if available.</param>
-		/// <returns>True if the failure is considered transient; otherwise false.</returns>
-		/// <remarks>
-		/// Cancellation is never treated as transient.
-		/// Transience is determined from <see cref="NpgsqlException.IsTransient"/>, well-known SQLSTATE codes,
-		/// and certain exception types such as <see cref="TimeoutException"/>.
-		/// </remarks>
 		public static bool IsTransientDatabaseFailure(Exception exception, string? sqlState)
 		{
 			if (exception is OperationCanceledException) return false;
 
-			// PgBouncer auth/config mismatch should never be retried.
-			if (IsPgBouncerConfigurationSqlState(sqlState)) return false;
-
 			for (var current = exception; current != null; current = current.InnerException)
 			{
-				if (current is NpgsqlException npgsqlEx && npgsqlEx.IsTransient) return true;
+				if (current is SqlException sqlEx && sqlEx.IsTransient) return true;
 			}
 
 			if (exception is TimeoutException) return true;
@@ -59,62 +37,36 @@ namespace FishMMO.Database.Npgsql.Services
 			return false;
 		}
 
-		/// <summary>
-		/// Determines whether a SQLSTATE represents a query cancellation/timeout (57014).
-		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsTimeoutSqlState(string? sqlState) =>
-			string.Equals(sqlState, PostgresSqlState.QueryCanceled, StringComparison.Ordinal);
+		public static bool IsTimeoutSqlState(string? sqlState) => string.Equals(sqlState, SqlServerSqlState.QueryCanceled, StringComparison.Ordinal);
 
-		/// <summary>
-		/// Determines whether a SQLSTATE represents a connection-level failure.
-		/// Includes 08xxx (connection errors) and 57Pxx (admin shutdown).
-		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsConnectionSqlState(string? sqlState)
 		{
 			if (string.IsNullOrWhiteSpace(sqlState)) return false;
-			return sqlState.StartsWith(PostgresSqlState.ConnectionClassPrefix, StringComparison.Ordinal)
-				|| sqlState == PostgresSqlState.AdminShutdown
-				|| sqlState == PostgresSqlState.CrashShutdown
-				|| sqlState == PostgresSqlState.CannotConnectNow;
+			return sqlState.StartsWith(SqlServerSqlState.ConnectionClassPrefix, StringComparison.Ordinal)
+				|| sqlState == SqlServerSqlState.AdminShutdown
+				|| sqlState == SqlServerSqlState.CrashShutdown
+				|| sqlState == SqlServerSqlState.CannotConnectNow;
 		}
 
-		/// <summary>
-		/// Determines whether a SQLSTATE is a PgBouncer-related transient failure.
-		/// Includes protocol violation (08P01), admin shutdown (57P01), and internal error (XX000).
-		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPgBouncerTransientSqlState(string? sqlState)
 		{
 			if (string.IsNullOrWhiteSpace(sqlState)) return false;
-			return sqlState == PostgresSqlState.ProtocolViolation
-				|| sqlState == PostgresSqlState.AdminShutdown
-				|| sqlState == PostgresSqlState.InternalError;
+			return sqlState == SqlServerSqlState.ProtocolViolation
+				|| sqlState == SqlServerSqlState.AdminShutdown
+				|| sqlState == SqlServerSqlState.InternalError;
 		}
 
-		/// <summary>
-		/// Determines whether a SQLSTATE is a PgBouncer configuration/authentication error that should not be retried.
-		/// Includes invalid authorization specification (28000).
-		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPgBouncerConfigurationSqlState(string? sqlState) =>
-			string.Equals(sqlState, PostgresSqlState.InvalidAuthorizationSpecification, StringComparison.Ordinal);
+			string.Equals(sqlState, SqlServerSqlState.InvalidAuthorizationSpecification, StringComparison.Ordinal);
 
-		/// <summary>
-		/// Determines whether a SQLSTATE represents a transient, retryable server-side failure.
-		/// Includes deadlock (40P01), serialization failure (40001), lock timeout (55P03), 
-		/// and too many connections (53300).
-		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsTransientSqlState(string? sqlState)
 		{
 			if (string.IsNullOrWhiteSpace(sqlState)) return false;
-			return sqlState == PostgresSqlState.DeadlockDetected
-				|| sqlState == PostgresSqlState.SerializationFailure
-				|| sqlState == PostgresSqlState.LockNotAvailable
-				|| sqlState == PostgresSqlState.TooManyConnections
-				|| sqlState == PostgresSqlState.InternalError;
+			return sqlState == SqlServerSqlState.DeadlockDetected
+				|| sqlState == SqlServerSqlState.SerializationFailure
+				|| sqlState == SqlServerSqlState.LockNotAvailable
+				|| sqlState == SqlServerSqlState.TooManyConnections
+				|| sqlState == SqlServerSqlState.InternalError;
 		}
 	}
 }

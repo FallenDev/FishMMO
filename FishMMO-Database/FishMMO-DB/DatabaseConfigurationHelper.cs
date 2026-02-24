@@ -36,7 +36,7 @@ namespace FishMMO.Database
 
 		/// <summary>
 		/// Resolves the configured database provider.
-		/// SQL Server is the only supported provider.
+		/// SqlServer is the only supported provider.
 		/// </summary>
 		public static DatabaseProvider ResolveDatabaseProvider(IConfiguration configuration)
 		{

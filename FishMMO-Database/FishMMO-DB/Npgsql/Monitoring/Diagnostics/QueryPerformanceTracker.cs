@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
-namespace FishMMO.Database.Npgsql.Monitoring.Diagnostics
+namespace FishMMO.Database.SqlServer.Monitoring.Diagnostics
 {
 	/// <summary>
 	/// Tracks query-level performance metrics for individual database operations.

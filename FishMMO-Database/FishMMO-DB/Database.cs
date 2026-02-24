@@ -4,10 +4,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using FishMMO.Database.Npgsql;
-using FishMMO.Database.Npgsql.Monitoring.Health;
-using FishMMO.Database.Npgsql.Monitoring.Metrics;
-using FishMMO.Database.Npgsql.Monitoring.Diagnostics;
+using FishMMO.Database.SqlServer.Monitoring.Health;
+using FishMMO.Database.SqlServer.Monitoring.Metrics;
+using FishMMO.Database.SqlServer.Monitoring.Diagnostics;
 using FishMMO.Database.Exceptions;
 using FishMMO.Database.SqlServer;
 
@@ -24,7 +23,7 @@ namespace FishMMO.Database
 		/// <inheritdoc/>
 		/// <remarks>
 		/// The service registry is populated during construction by discovering implementations
-		/// in the `FishMMO.Database.Npgsql.Services` assembly. Consumers should call
+		/// in the `FishMMO.Database.SqlServer.Services` assembly. Consumers should call
 		/// <see cref="IDatabaseServiceRegistry.TryGet{TService}(out TService)"/> to obtain services.
 		/// </remarks>
 		public IDatabaseServiceRegistry ServiceRegistry { get; private set; }
@@ -32,7 +31,7 @@ namespace FishMMO.Database
 		/// <inheritdoc/>
 		/// <remarks>
 		/// The <see cref="DatabaseHealthMonitor"/> performs lightweight connectivity and response-time checks
-		/// against the underlying database using <see cref="INpgsqlDbContextFactory"/>.
+		/// against the underlying database using <see cref="ISqlServerDbContextFactory"/>.
 		/// </remarks>
 		public DatabaseHealthMonitor HealthMonitor { get; private set; }
 
@@ -41,17 +40,17 @@ namespace FishMMO.Database
 
 		/// <inheritdoc/>
 		/// <remarks>
-		/// Exposes the configured <see cref="INpgsqlDbContextFactory"/> used to create short-lived
-		/// <see cref="NpgsqlDbContext"/> instances. Prefer service interfaces from <see cref="ServiceRegistry"/>
+		/// Exposes the configured <see cref="ISqlServerDbContextFactory"/> used to create short-lived
+		/// <see cref="SqlServerDbContext"/> instances. Prefer service interfaces from <see cref="ServiceRegistry"/>
 		/// for application operations.
 		/// </remarks>
-		public INpgsqlDbContextFactory DbContextFactory { get; private set; }
+		public ISqlServerDbContextFactory DbContextFactory { get; private set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Database"/> class with a pre-built <see cref="IConfiguration"/>.
 		/// Creates the DbContext factory, discovers and registers all services, and sets up monitoring.
 		/// </summary>
-		/// <param name="configuration">Application configuration containing an <c>Npgsql</c> section. Cannot be <c>null</c>.</param>
+		/// <param name="configuration">Application configuration containing an <c>SqlServer</c> section. Cannot be <c>null</c>.</param>
 		/// <param name="enableLogging">Enable sensitive data logging for development (default: false).</param>
 		/// <param name="commandTimeout">Optional database command timeout override in seconds.</param>
 		/// <param name="healthCheckWarningMs">Health check warning threshold in milliseconds (default: 100).</param>
@@ -78,13 +77,12 @@ namespace FishMMO.Database
 		/// Shared initialization logic used by constructors. Sets up the DbContext factory, service registry,
 		/// health monitor and metrics tracker.
 		/// </summary>
-		/// <param name="dbContextFactory">The pre-configured <see cref="INpgsqlDbContextFactory"/> to use. Cannot be <c>null</c>.</param>
+		/// <param name="dbContextFactory">The pre-configured <see cref="ISqlServerDbContextFactory"/> to use. Cannot be <c>null</c>.</param>
 		/// <param name="healthCheckWarningMs">Health check warning threshold in milliseconds.</param>
 		/// <param name="healthCheckCriticalMs">Health check critical threshold in milliseconds.</param>
 		/// <exception cref="DatabaseException">Thrown when initialization fails.</exception>
 		private void Initialize(
-			INpgsqlDbContextFactory dbContextFactory,
-			DatabaseProvider provider,
+			ISqlServerDbContextFactory dbContextFactory,
 			int healthCheckWarningMs,
 			int healthCheckCriticalMs)
 		{
@@ -107,7 +105,7 @@ namespace FishMMO.Database
 			}
 		}
 
-		private IDatabaseServiceRegistry CreateSqlServerServiceRegistry(INpgsqlDbContextFactory dbContextFactory)
+		private IDatabaseServiceRegistry CreateSqlServerServiceRegistry(ISqlServerDbContextFactory dbContextFactory)
 		{
 			if (dbContextFactory == null)
 				throw new ArgumentNullException(nameof(dbContextFactory));
@@ -118,25 +116,25 @@ namespace FishMMO.Database
 		}
 
 		/// <summary>
-		/// Creates and populates an <see cref="NpgsqlServiceRegistry"/> by reflecting over the
-		/// Npgsql services assembly and constructing concrete implementations.
+		/// Creates and populates an <see cref="SqlServerServiceRegistry"/> by reflecting over the
+		/// SqlServer services assembly and constructing concrete implementations.
 		/// </summary>
 		/// <param name="dbContextFactory">DbContext factory passed to service constructors.</param>
 		/// <returns>An initialized <see cref="IDatabaseServiceRegistry"/> instance.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="dbContextFactory"/> is <c>null</c>.</exception>
 		/// <summary>
-		/// Discovers and registers SQL Server-backed service implementations by reflection.
+		/// Discovers and registers SqlServer-backed service implementations by reflection.
 		///
 		/// The method finds all service interfaces in the namespace
-		/// <c>FishMMO.Database.Npgsql.Services.Interfaces</c> and pairs them with a single concrete
-		/// implementation in <c>FishMMO.Database.Npgsql.Services</c>. Each implementation is constructed
-		/// with the provided <see cref="INpgsqlDbContextFactory"/> and registered into the registry.
+		/// <c>FishMMO.Database.SqlServer.Services.Interfaces</c> and pairs them with a single concrete
+		/// implementation in <c>FishMMO.Database.SqlServer.Services</c>. Each implementation is constructed
+		/// with the provided <see cref="ISqlServerDbContextFactory"/> and registered into the registry.
 		/// </summary>
 		/// <param name="registry">The registry to populate. Cannot be <c>null</c>.</param>
 		/// <param name="dbContextFactory">Factory instance to pass to service constructors. Cannot be <c>null</c>.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="registry"/> or <paramref name="dbContextFactory"/> is <c>null</c>.</exception>
 		/// <exception cref="DatabaseException">Thrown when service discovery or construction fails.</exception>
-		private static void RegisterServicesByReflection(IDatabaseServiceRegistry registry, INpgsqlDbContextFactory dbContextFactory)
+		private static void RegisterServicesByReflection(IDatabaseServiceRegistry registry, ISqlServerDbContextFactory dbContextFactory)
 		{
 			if (registry == null)
 				throw new ArgumentNullException(nameof(registry));
@@ -145,9 +143,9 @@ namespace FishMMO.Database
 
 			// Discover all service interfaces and their concrete implementations, then register them.
 			// This avoids a growing manual registration wall as new tables/services are added.
-			const string interfaceNamespace = "FishMMO.Database.Npgsql.Services.Interfaces";
+			const string interfaceNamespace = "FishMMO.Database.SqlServer.Services.Interfaces";
 
-			var assembly = typeof(NpgsqlDbContextFactory).Assembly;
+			var assembly = typeof(SqlServerDbContextFactory).Assembly;
 			var serviceInterfaces = assembly.GetTypes()
 				.Where(t => t.IsInterface
 					&& string.Equals(t.Namespace, interfaceNamespace, StringComparison.Ordinal)
@@ -159,7 +157,7 @@ namespace FishMMO.Database
 				.Where(t => t.IsClass
 					&& !t.IsAbstract
 					&& t.Namespace != null
-					&& t.Namespace.StartsWith("FishMMO.Database.Npgsql.Services", StringComparison.Ordinal))
+					&& t.Namespace.StartsWith("FishMMO.Database.SqlServer.Services", StringComparison.Ordinal))
 				.ToArray();
 
 			var registerOpenMethod = registry.GetType().GetMethod(
@@ -227,7 +225,7 @@ namespace FishMMO.Database
 					var serviceInterfacesList = string.Join(", ", group.Select(t => t.FullName).OrderBy(n => n, StringComparer.Ordinal));
 					throw new DatabaseException(
 						$"Failed to construct '{implementation.FullName}' for: {serviceInterfacesList}. " +
-						$"Ensure it has a public constructor accepting '{nameof(INpgsqlDbContextFactory)}'.",
+						$"Ensure it has a public constructor accepting '{nameof(ISqlServerDbContextFactory)}'.",
 						innerException: ex,
 						errorCode: "INVALID_CONFIGURATION");
 				}

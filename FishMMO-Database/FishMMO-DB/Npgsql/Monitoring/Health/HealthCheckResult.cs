@@ -1,6 +1,6 @@
 using System;
 
-namespace FishMMO.Database.Npgsql.Monitoring.Health
+namespace FishMMO.Database.SqlServer.Monitoring.Health
 {
 	/// <summary>
 	/// Contains the result of a database health check operation.

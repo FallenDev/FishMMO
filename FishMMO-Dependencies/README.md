@@ -21,8 +21,8 @@ The following NuGet packages are referenced in the project:
 - **Microsoft.Extensions.Logging** (+Abstractions): Logging framework.
 - **Microsoft.Extensions.Options**: Options pattern support.
 - **Microsoft.Extensions.Primitives**: Change tracking primitives.
-- **Npgsql**: PostgreSQL database provider.
-- **Npgsql.EntityFrameworkCore.PostgreSQL**: PostgreSQL support for EF Core.
+- **SqlServer**: SQL Server database provider.
+- **Microsoft.EntityFrameworkCore.SqlServer**: SQL Server support for EF Core.
 - **OpenAI**: OpenAI API client.
 - **srp**: Secure Remote Password protocol implementation.
 - **StackExchange.Redis**: Redis client library.

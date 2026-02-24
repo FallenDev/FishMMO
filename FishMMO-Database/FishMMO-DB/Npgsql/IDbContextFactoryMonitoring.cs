@@ -1,7 +1,7 @@
-using FishMMO.Database.Npgsql.Monitoring.Metrics;
-using FishMMO.Database.Npgsql.Monitoring.Diagnostics;
+using FishMMO.Database.SqlServer.Monitoring.Metrics;
+using FishMMO.Database.SqlServer.Monitoring.Diagnostics;
 
-namespace FishMMO.Database.Npgsql
+namespace FishMMO.Database.SqlServer
 {
 	/// <summary>
 	/// Optional monitoring interface for database context factories.
