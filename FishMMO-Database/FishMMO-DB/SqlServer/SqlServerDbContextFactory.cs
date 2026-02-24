@@ -41,7 +41,6 @@ namespace FishMMO.Database.SqlServer
 				{
 					sqlOptions.CommandTimeout(configuration.CommandTimeout);
 				})
-				.UseSnakeCaseNamingConvention()
 				.AddInterceptors(connectionMetricsInterceptor);
 
 			if (configuration.EnableLogging)
