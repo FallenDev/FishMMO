@@ -21,7 +21,7 @@ namespace FishMMO.Database.SqlServer.Services
 
 			for (var current = exception; current != null; current = current.InnerException)
 			{
-				if (current is SqlException sqlEx && sqlEx.IsTransient) return true;
+				if (current is SqlException sqlEx && IsTransientSqlErrorNumber(sqlEx.Number)) return true;
 			}
 
 			if (exception is TimeoutException) return true;
@@ -35,6 +35,22 @@ namespace FishMMO.Database.SqlServer.Services
 			}
 
 			return false;
+		}
+
+		private static bool IsTransientSqlErrorNumber(int number)
+		{
+			return number == -2 // Timeout
+				|| number == 20 // Login failure / encryption / network-related
+				|| number == 64 // Connection dropped
+				|| number == 233 // Initialization / login process failure
+				|| number == 1205 // Deadlock victim
+				|| number == 4060 // Cannot open requested database
+				|| number == 40197 // Service encountered an error and closed connection
+				|| number == 40501 // Service busy / throttling
+				|| number == 40613 // Database unavailable
+				|| number == 49918 // Cannot process request now
+				|| number == 49919 // Too many create/update operations in progress
+				|| number == 49920; // Too many operations in progress
 		}
 
 		public static bool IsTimeoutSqlState(string? sqlState) => string.Equals(sqlState, SqlServerSqlState.QueryCanceled, StringComparison.Ordinal);
