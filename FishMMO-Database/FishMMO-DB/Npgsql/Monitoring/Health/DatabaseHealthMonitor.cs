@@ -138,9 +138,9 @@ namespace FishMMO.Database.SqlServer.Monitoring.Health
 				result.DatabaseName = connection.Database;
 				result.ServerAddress = connection.DataSource;
 
-				if (connection is SqlConnection npgsqlConnection)
+				if (connection is SqlConnection sqlConnection)
 				{
-					result.PoolInfo = GetPoolInfo(npgsqlConnection);
+					result.PoolInfo = GetPoolInfo(sqlConnection);
 				}
 
 				ExtractPoolMetrics(result);
@@ -232,9 +232,9 @@ namespace FishMMO.Database.SqlServer.Monitoring.Health
 				result.ServerAddress = connection.DataSource;
 
 				// Extract pool info if using SqlServer
-				if (connection is SqlConnection npgsqlConnection)
+				if (connection is SqlConnection sqlConnection)
 				{
-					result.PoolInfo = GetPoolInfo(npgsqlConnection);
+					result.PoolInfo = GetPoolInfo(sqlConnection);
 				}
 
 				// Extract runtime pool metrics from factory
