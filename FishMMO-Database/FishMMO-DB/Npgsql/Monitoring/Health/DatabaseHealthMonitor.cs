@@ -340,7 +340,7 @@ namespace FishMMO.Database.SqlServer.Monitoring.Health
 			{
 				var builder = new SqlConnectionStringBuilder(connection.ConnectionString);
 				return $"Pool: Min={builder.MinPoolSize}, Max={builder.MaxPoolSize}, " +
-					   $"Timeout={builder.Timeout}s, CmdTimeout={builder.CommandTimeout}s";
+					   $"ConnectTimeout={builder.ConnectTimeout}s";
 			}
 			catch
 			{
