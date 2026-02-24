@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using FishMMO.Database.Data;
 using FishMMO.Database.Exceptions;
-using FishMMO.Database.Npgsql.Entities;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Entities;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <summary>
 	/// Character bank service with async operations, atomic SQL, and DTO pattern.
@@ -34,8 +34,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for checking whether a character exists and is not deleted.
 		/// Returns the character ID if active, otherwise 0.
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<long>> getActiveCharacterIdQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long characterId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<long>> getActiveCharacterIdQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long characterId, CancellationToken ct) =>
 				context.Characters
 					.AsNoTracking()
 					.Where(c => c.ID == characterId && !c.Deleted)
@@ -45,8 +45,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <summary>
 		/// Compiled query for retrieving character bank items (hot path for bank access).
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<List<CharacterBankEntity>>> getBankItemsQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long characterId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<List<CharacterBankEntity>>> getBankItemsQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long characterId, CancellationToken ct) =>
 				context.CharacterBankItems
 					.AsNoTracking()
 					.Where(i => i.CharacterID == characterId && !i.Deleted)
@@ -57,7 +57,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <param name="dbContextFactory">Factory for creating database contexts.</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
-		public CharacterBankService(INpgsqlDbContextFactory dbContextFactory) : base(dbContextFactory)
+		public CharacterBankService(ISqlServerDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}
 

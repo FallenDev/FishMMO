@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FishMMO.Database.Npgsql;
+using FishMMO.Database.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Discord;
 using System.Linq;
@@ -16,7 +16,7 @@ namespace FishMMO.DiscordBot.Services
 	public class ChatPollingService : IHostedService, IDisposable
 	{
 		private readonly DiscordSocketClient discordClient;
-		private readonly NpgsqlDbContextFactory dbContextFactory; // Inject factory instead of direct DbContext
+		private readonly SqlServerDbContextFactory dbContextFactory; // Inject factory instead of direct DbContext
 		private readonly ILogger<ChatPollingService> logger;
 		private readonly IConfiguration configuration; // Inject IConfiguration to get settings
 		private readonly DynamicChannelManagerService dynamicChannelManager; // Inject DynamicChannelManagerService
@@ -28,7 +28,7 @@ namespace FishMMO.DiscordBot.Services
 		// Constructor with dependency injection
 		public ChatPollingService(
 			DiscordSocketClient discordClient,
-			NpgsqlDbContextFactory dbContextFactory,
+			SqlServerDbContextFactory dbContextFactory,
 			ILogger<ChatPollingService> logger,
 			IConfiguration configuration,
 			DynamicChannelManagerService dynamicChannelManager)

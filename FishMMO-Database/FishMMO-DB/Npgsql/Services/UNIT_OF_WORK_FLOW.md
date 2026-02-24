@@ -5,8 +5,8 @@ This document explains how `UnitOfWorkService` and the `BaseService` execution w
 - when you call services inside a unit of work (ambient DbContext + transaction)
 
 It reflects the current behavior of:
-- `FishMMO-DB/Npgsql/Services/UnitOfWorkService.cs`
-- `FishMMO-DB/Npgsql/Services/BaseService.cs`
+- `FishMMO-DB/SqlServer/Services/UnitOfWorkService.cs`
+- `FishMMO-DB/SqlServer/Services/BaseService.cs`
 
 ---
 
@@ -73,7 +73,7 @@ What happens (high level):
 2. Wrapper creates a new DbContext.
 3. Delegate runs.
 4. If `saveChanges: false` (raw SQL), wrapper does not call `SaveChangesAsync()`.
-5. Wrapper maps exceptions (stale state, transient Npgsql failures, etc.) into `DatabaseResult`.
+5. Wrapper maps exceptions (stale state, transient SqlServer failures, etc.) into `DatabaseResult`.
 
 ---
 

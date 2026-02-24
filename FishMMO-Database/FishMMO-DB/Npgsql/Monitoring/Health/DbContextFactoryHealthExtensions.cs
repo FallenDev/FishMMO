@@ -1,10 +1,10 @@
 using System;
-using FishMMO.Database.Npgsql.Monitoring.Metrics;
+using FishMMO.Database.SqlServer.Monitoring.Metrics;
 
-namespace FishMMO.Database.Npgsql.Monitoring.Health
+namespace FishMMO.Database.SqlServer.Monitoring.Health
 {
 	/// <summary>
-	/// Extension methods for deriving connection pool health from an <see cref="INpgsqlDbContextFactory"/>.
+	/// Extension methods for deriving connection pool health from an <see cref="ISqlServerDbContextFactory"/>.
 	/// </summary>
 	public static class DbContextFactoryHealthExtensions
 	{
@@ -21,7 +21,7 @@ namespace FishMMO.Database.Npgsql.Monitoring.Health
 		/// Intended for telemetry/health endpoints.
 		/// </remarks>
 		public static PoolHealthResult GetConnectionPoolHealth(
-			this INpgsqlDbContextFactory dbContextFactory,
+			this ISqlServerDbContextFactory dbContextFactory,
 			double warningThreshold = 70.0,
 			double criticalThreshold = 85.0)
 		{

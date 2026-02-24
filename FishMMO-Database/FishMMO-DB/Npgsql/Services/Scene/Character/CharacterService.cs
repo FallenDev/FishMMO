@@ -5,12 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using FishMMO.Database.Data;
 using FishMMO.Database.Data.Enums;
-using FishMMO.Database.Npgsql.Entities;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Entities;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 using FishMMO.Database.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <inheritdoc/>
 	public sealed class CharacterService : BaseService<CharacterEntity>, ICharacterService
@@ -28,8 +28,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for FetchAsync (by id) hot path.
 		/// Pre-compiles the query expression tree for better performance on repeated executions.
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<CharacterEntity?>> fetchByIdQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long characterId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<CharacterEntity?>> fetchByIdQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long characterId, CancellationToken ct) =>
 				(CharacterEntity?)context.Characters
 					.AsNoTracking()
 					.FirstOrDefault(c => c.ID == characterId && !c.Deleted));
@@ -38,8 +38,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for retrieving character by name (hot path for login/character selection).
 		/// </summary>
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type
-		private static readonly Func<NpgsqlDbContext, string, CancellationToken, Task<CharacterEntity?>> fetchByNameQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, string nameLower, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, string, CancellationToken, Task<CharacterEntity?>> fetchByNameQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, string nameLower, CancellationToken ct) =>
 				context.Characters
 					.AsNoTracking()
 					.FirstOrDefault(c => c.NameLowercase == nameLower && !c.Deleted));
@@ -49,8 +49,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for retrieving character by name with a selected filter.
 		/// </summary>
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type
-		private static readonly Func<NpgsqlDbContext, string, bool, CancellationToken, Task<CharacterEntity?>> fetchByNameSelectedQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, string nameLower, bool selected, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, string, bool, CancellationToken, Task<CharacterEntity?>> fetchByNameSelectedQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, string nameLower, bool selected, CancellationToken ct) =>
 				context.Characters
 					.AsNoTracking()
 					.FirstOrDefault(c => c.NameLowercase == nameLower && !c.Deleted && c.Selected == selected));
@@ -60,8 +60,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for retrieving a single character by account.
 		/// </summary>
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type
-		private static readonly Func<NpgsqlDbContext, string, CancellationToken, Task<CharacterEntity?>> fetchByAccountQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, string account, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, string, CancellationToken, Task<CharacterEntity?>> fetchByAccountQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, string account, CancellationToken ct) =>
 				context.Characters
 					.AsNoTracking()
 					.FirstOrDefault(c => c.Account == account && !c.Deleted));
@@ -71,8 +71,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for retrieving a single character by account with a selected filter.
 		/// </summary>
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type
-		private static readonly Func<NpgsqlDbContext, string, bool, CancellationToken, Task<CharacterEntity?>> fetchByAccountSelectedQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, string account, bool selected, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, string, bool, CancellationToken, Task<CharacterEntity?>> fetchByAccountSelectedQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, string account, bool selected, CancellationToken ct) =>
 				context.Characters
 					.AsNoTracking()
 					.FirstOrDefault(c => c.Account == account && !c.Deleted && c.Selected == selected));
@@ -81,8 +81,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <summary>
 		/// Compiled query for counting characters by account (hot path for character creation validation).
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, string, CancellationToken, Task<int>> countByAccountQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, string account, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, string, CancellationToken, Task<int>> countByAccountQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, string account, CancellationToken ct) =>
 				context.Characters
 						.AsNoTracking()
 						.Where(c => c.Account == account && !c.Deleted)
@@ -91,8 +91,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <summary>
 		/// Compiled query for retrieving all characters by account (hot path for character selection).
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, string, CancellationToken, Task<List<CharacterEntity>>> fetchManyByAccountQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, string account, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, string, CancellationToken, Task<List<CharacterEntity>>> fetchManyByAccountQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, string account, CancellationToken ct) =>
 				context.Characters
 					.AsNoTracking()
 					.Where(c => c.Account == account && !c.Deleted)
@@ -103,7 +103,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <param name="dbContextFactory">The database context factory.</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
-		public CharacterService(INpgsqlDbContextFactory dbContextFactory) : base(dbContextFactory)
+		public CharacterService(ISqlServerDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}
 

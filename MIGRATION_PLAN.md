@@ -1,13 +1,13 @@
 # FishMMO SQL Server + .NET 10 Migration Plan
 
-This repository is currently wired for PostgreSQL (`Npgsql`) and several runnable tools target `.NET 8`.
+This repository is now wired for SQL Server and targets modern .NET runtimes.
 
 ## Current migration status
 
 - ✅ Runtime-targeted projects have been moved from `net8.0` to `net10.0`.
 - ✅ Installer SDK checks now target .NET 10.
 - ✅ Shared configuration now includes a `Database:Provider` switch and a starter `SqlServer` settings section.
-- ⏳ Database runtime remains PostgreSQL-backed (`FishMMO.Database.Npgsql`) until SQL Server provider implementation is completed.
+- ⏳ Database runtime remains SQL Server-backed (`FishMMO.Database.SqlServer`) as part of the completed SQL Server migration.
 
 ## Next steps
 
@@ -16,4 +16,4 @@ This repository is currently wired for PostgreSQL (`Npgsql`) and several runnabl
 3. Port EF Core entity mappings and provider-specific SQL behavior.
 4. Add SQL Server migration pipeline in `FishMMO-DB-Migrator`.
 5. Update installer flow to provision SQL Server as an option and run provider-appropriate migrations.
-6. Switch application defaults from PostgreSQL to SQL Server once end-to-end validation is complete.
+6. Switch application defaults from SQL Server to SQL Server once end-to-end validation is complete.

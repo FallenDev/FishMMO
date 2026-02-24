@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using FishMMO.Database.Data;
 using FishMMO.Database.Data.Enums;
 using FishMMO.Database.Exceptions;
-using FishMMO.Database.Npgsql.Entities;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Entities;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <summary>
 	/// Account service providing async operations for account creation and login.
@@ -22,8 +22,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for ExistsAsync hot path.
 		/// Pre-compiles the query expression tree for better performance on repeated executions.
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, string, CancellationToken, Task<bool>> accountExistsByNameQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, string accountName, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, string, CancellationToken, Task<bool>> accountExistsByNameQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, string accountName, CancellationToken ct) =>
 				context.Accounts
 					.AsNoTracking()
 					.Any(a => a.Name == accountName));
@@ -33,8 +33,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Pre-compiles the query expression tree for better performance on repeated executions.
 		/// </summary>
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type
-		private static readonly Func<NpgsqlDbContext, string, CancellationToken, Task<AccountEntity?>> getAccountForLoginQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, string accountName, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, string, CancellationToken, Task<AccountEntity?>> getAccountForLoginQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, string accountName, CancellationToken ct) =>
 				context.Accounts
 					.AsNoTracking()
 					.FirstOrDefault(a => a.Name == accountName));
@@ -45,8 +45,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Pre-compiles the query expression tree for better performance on repeated executions.
 		/// </summary>
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type
-		private static readonly Func<NpgsqlDbContext, string, CancellationToken, Task<DateTime?>> getLastLoginQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, string accountName, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, string, CancellationToken, Task<DateTime?>> getLastLoginQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, string accountName, CancellationToken ct) =>
 				context.Accounts
 					.AsNoTracking()
 					.Where(a => a.Name == accountName)
@@ -59,7 +59,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <param name="dbContextFactory">DbContext factory for creating contexts.</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
-		public AccountService(INpgsqlDbContextFactory dbContextFactory) : base(dbContextFactory)
+		public AccountService(ISqlServerDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}
 

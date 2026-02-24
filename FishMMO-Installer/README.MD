@@ -277,7 +277,7 @@ sc.exe query "FishMMO-NGINX"
 - Linux:
 
 ```bash
-sudo systemctl status postgresql
+sudo systemctl status sqlserver
 ```
 
 - Windows: verify SQL Server service is running in Services or with `sc.exe query`.

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using FishMMO.Database.Data;
 using FishMMO.Database.Exceptions;
-using FishMMO.Database.Npgsql.Entities;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Entities;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <summary>
 	/// Service for managing character achievements in the database.
@@ -22,8 +22,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <summary>
 		/// Compiled query for retrieving character achievements.
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<List<CharacterAchievementEntity>>> getAchievementsQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long characterId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<List<CharacterAchievementEntity>>> getAchievementsQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long characterId, CancellationToken ct) =>
 				context.CharacterAchievements
 					.AsNoTracking()
 					.Where(a => a.CharacterID == characterId && !a.Deleted)
@@ -34,7 +34,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <param name="dbContextFactory">Factory for creating database contexts.</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
-		public CharacterAchievementService(INpgsqlDbContextFactory dbContextFactory) : base(dbContextFactory)
+		public CharacterAchievementService(ISqlServerDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}
 

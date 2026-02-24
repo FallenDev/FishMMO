@@ -28,7 +28,7 @@ Monitoring/
 ## Namespaces
 
 ### Health Monitoring
-**Namespace:** `FishMMO.Database.Npgsql.Monitoring.Health`
+**Namespace:** `FishMMO.Database.SqlServer.Monitoring.Health`
 
 Focuses on **availability** and **connectivity**:
 - Database connection health
@@ -37,7 +37,7 @@ Focuses on **availability** and **connectivity**:
 - Health status reporting
 
 ### Metrics Tracking
-**Namespace:** `FishMMO.Database.Npgsql.Monitoring.Metrics`
+**Namespace:** `FishMMO.Database.SqlServer.Monitoring.Metrics`
 
 Focuses on **performance** and **statistics**:
 - Query success/failure rates
@@ -46,7 +46,7 @@ Focuses on **performance** and **statistics**:
 - Performance summaries
 
 ### Diagnostics
-**Namespace:** `FishMMO.Database.Npgsql.Monitoring.Diagnostics`
+**Namespace:** `FishMMO.Database.SqlServer.Monitoring.Diagnostics`
 
 Focuses on **query-level performance** and **troubleshooting**:
 - Per-operation query performance tracking
@@ -60,7 +60,7 @@ Focuses on **query-level performance** and **troubleshooting**:
 ### Health Monitoring
 
 ```csharp
-using FishMMO.Database.Npgsql.Monitoring.Health;
+using FishMMO.Database.SqlServer.Monitoring.Health;
 
 var healthMonitor = new DatabaseHealthMonitor(dbContextFactory);
 var healthResult = await healthMonitor.CheckHealthAsync();
@@ -74,7 +74,7 @@ if (healthResult.Status == HealthStatus.Healthy)
 ### Metrics Tracking
 
 ```csharp
-using FishMMO.Database.Npgsql.Monitoring.Metrics;
+using FishMMO.Database.SqlServer.Monitoring.Metrics;
 
 var metricsTracker = new DatabaseMetricsTracker();
 
@@ -98,10 +98,10 @@ Console.WriteLine($"Avg Response: {summary.AverageResponseTimeMs}ms");
 
 ```csharp
 using System.Diagnostics;
-using FishMMO.Database.Npgsql.Monitoring.Diagnostics;
+using FishMMO.Database.SqlServer.Monitoring.Diagnostics;
 
-// Access through NpgsqlDbContextFactory (automatically configured from appsettings.json)
-var factory = new NpgsqlDbContextFactory(configPath);
+// Access through SqlServerDbContextFactory (automatically configured from appsettings.json)
+var factory = new SqlServerDbContextFactory(configPath);
 var performanceTracker = factory.PerformanceTracker;
 
 // In your service methods:
@@ -175,10 +175,10 @@ foreach (var (opName, metrics) in slowestOps)
 
 **See [INTEGRATION_EXAMPLE.cs](Diagnostics/INTEGRATION_EXAMPLE.cs) for comprehensive usage patterns.**
 ```csharp
-using FishMMO.Database.Npgsql.Monitoring.Metrics;
+using FishMMO.Database.SqlServer.Monitoring.Metrics;
 
-// Access through NpgsqlDbContextFactory
-var factory = new NpgsqlDbContextFactory(configPath);
+// Access through SqlServerDbContextFactory
+var factory = new SqlServerDbContextFactory(configPath);
 var poolMetrics = factory.PoolMetrics;
 
 Console.WriteLine($"Active Connections: {poolMetrics.ActiveConnections}");
@@ -218,7 +218,7 @@ The Monitoring namespace is designed to accommodate:
 
 ## Integration Points
 
-- **NpgsqlDbContextFactory**: Integrates ConnectionPoolMetrics and QueryPerformanceTracker
+- **SqlServerDbContextFactory**: Integrates ConnectionPoolMetrics and QueryPerformanceTracker
 - **DatabaseHealthMonitor**: Combines health checks with pool metrics
 - **Services**: Integrate QueryPerformanceTracker for operation-level monitoring
 - **Unity**: DatabaseHealthService for game server monitoring

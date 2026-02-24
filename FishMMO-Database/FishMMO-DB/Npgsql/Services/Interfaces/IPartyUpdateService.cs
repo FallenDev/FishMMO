@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FishMMO.Database.Data;
 
-namespace FishMMO.Database.Npgsql.Services.Interfaces
+namespace FishMMO.Database.SqlServer.Services.Interfaces
 {
 	/// <summary>
 	/// Service interface for party update timestamp tracking.
@@ -39,7 +39,7 @@ namespace FishMMO.Database.Npgsql.Services.Interfaces
 		/// A <see cref="DatabaseResult"/> indicating success or containing a <see cref="DatabaseException"/> on failure.
 		/// </returns>
 		/// <remarks>
-		/// Uses a single-statement PostgreSQL <c>INSERT ... ON CONFLICT DO UPDATE</c> with a conditional
+		/// Uses a single-statement SqlServer <c>INSERT ... ON CONFLICT DO UPDATE</c> with a conditional
 		/// update to avoid regressing <c>last_update</c>.
 		/// </remarks>
 		Task<DatabaseResult> PersistAsync(long partyId, CancellationToken cancellationToken = default);

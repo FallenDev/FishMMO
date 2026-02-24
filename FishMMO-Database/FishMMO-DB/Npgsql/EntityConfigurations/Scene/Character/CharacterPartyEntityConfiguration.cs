@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FishMMO.Database.Npgsql.Entities
+namespace FishMMO.Database.SqlServer.Entities
 {
 	/// <summary>
 	/// Entity configuration for CharacterPartyEntity with explicit indexes and constraints.

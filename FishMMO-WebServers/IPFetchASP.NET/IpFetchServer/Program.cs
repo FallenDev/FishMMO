@@ -1,4 +1,4 @@
-using FishMMO.Database.Npgsql;
+using FishMMO.Database.SqlServer;
 using Microsoft.AspNetCore.HttpOverrides;
 using FishMMO.Logging;
 
@@ -71,8 +71,8 @@ namespace FishMMO.WebServer
 					{
 						Log.Info("Services", "Registering services...");
 
-						services.AddSingleton(new NpgsqlDbConfiguration(context.Configuration));
-						services.AddSingleton<NpgsqlDbContextFactory>();
+						services.AddSingleton(new SqlServerDbConfiguration(context.Configuration));
+						services.AddSingleton<SqlServerDbContextFactory>();
 						services.AddMemoryCache();
 						services.AddControllers();
 

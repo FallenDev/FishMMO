@@ -6,7 +6,7 @@ using FishMMO.Database.Exceptions;
 namespace FishMMO.Database.SqlServer
 {
 	/// <summary>
-	/// Service registry for SQL Server-backed database services.
+	/// Service registry for SqlServer-backed database services.
 	/// </summary>
 	public sealed class SqlServerServiceRegistry : IDatabaseServiceRegistry
 	{

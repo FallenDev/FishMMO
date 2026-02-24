@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord.Rest;
 using FishMMO.DiscordBot.Data; // Ensure this is correct for DynamicGameChatChannelState
-using FishMMO.Database.Npgsql; // Added for NpgsqlDbContextFactory
+using FishMMO.Database.SqlServer; // Added for SqlServerDbContextFactory
 using Microsoft.EntityFrameworkCore; // Added for AsQueryable() and FirstOrDefaultAsync
 
 namespace FishMMO.DiscordBot.Services
@@ -32,7 +32,7 @@ namespace FishMMO.DiscordBot.Services
 		private readonly DiscordSocketClient discord;
 		private readonly ILogger<DynamicChannelManagerService> logger;
 		private readonly BotConfigurationService botConfigService;
-		private readonly NpgsqlDbContextFactory dbContextFactory; // Added NpgsqlDbContextFactory
+		private readonly SqlServerDbContextFactory dbContextFactory; // Added SqlServerDbContextFactory
 		private ConcurrentDictionary<ulong, Dictionary<long, Dictionary<long, DynamicGameChatChannelState>>> managedChannels; // GuildId -> WorldId -> SceneId -> State
 		private Timer? cleanupTimer;
 		private const int CleanupIntervalMinutes = 30; // How often to check for stale channels
@@ -45,12 +45,12 @@ namespace FishMMO.DiscordBot.Services
 			DiscordSocketClient discord,
 			ILogger<DynamicChannelManagerService> logger,
 			BotConfigurationService botConfigService,
-			NpgsqlDbContextFactory dbContextFactory) // Injected NpgsqlDbContextFactory
+			SqlServerDbContextFactory dbContextFactory) // Injected SqlServerDbContextFactory
 		{
 			this.discord = discord;
 			this.logger = logger;
 			this.botConfigService = botConfigService;
-			this.dbContextFactory = dbContextFactory; // Initialized NpgsqlDbContextFactory
+			this.dbContextFactory = dbContextFactory; // Initialized SqlServerDbContextFactory
 			managedChannels = botConfigService.GetDynamicChannelStates(); // Get reference to the shared state
 		}
 

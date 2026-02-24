@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FishMMO.Database.Data;
-using FishMMO.Database.Npgsql.Services.Interfaces.Actions;
+using FishMMO.Database.SqlServer.Services.Interfaces.Actions;
 
-namespace FishMMO.Database.Npgsql.Services.Interfaces
+namespace FishMMO.Database.SqlServer.Services.Interfaces
 {
 	/// <summary>
 	/// Service interface for world server registration and management operations.

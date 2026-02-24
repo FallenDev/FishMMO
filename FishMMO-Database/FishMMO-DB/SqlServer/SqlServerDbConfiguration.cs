@@ -1,13 +1,13 @@
 using System;
 using FishMMO.Database.Exceptions;
-using FishMMO.Database.Npgsql;
+using FishMMO.Database.SqlServer;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
 namespace FishMMO.Database.SqlServer
 {
 	/// <summary>
-	/// Encapsulates validated SQL Server database configuration.
+	/// Encapsulates validated SqlServer database configuration.
 	/// </summary>
 	public sealed class SqlServerDbConfiguration
 	{
@@ -17,7 +17,7 @@ namespace FishMMO.Database.SqlServer
 		public int MaxPoolSize => Settings.MaxPoolSize;
 		public int CommandTimeout => Settings.CommandTimeout;
 		public RetryPolicyConfiguration RetryPolicy => Settings.RetryPolicy ?? new RetryPolicyConfiguration();
-		public FishMMO.Database.Npgsql.Monitoring.Diagnostics.QueryPerformanceConfiguration PerformanceConfiguration { get; }
+		public FishMMO.Database.SqlServer.Monitoring.Diagnostics.QueryPerformanceConfiguration PerformanceConfiguration { get; }
 
 		public SqlServerDbConfiguration(IConfiguration configuration, bool enableLogging = false, int? commandTimeoutOverride = null)
 		{
@@ -64,10 +64,10 @@ namespace FishMMO.Database.SqlServer
 			}.ConnectionString;
 		}
 
-		private static FishMMO.Database.Npgsql.Monitoring.Diagnostics.QueryPerformanceConfiguration MapPerformanceConfiguration(global::FishMMO.Database.QueryPerformanceConfiguration source)
+		private static FishMMO.Database.SqlServer.Monitoring.Diagnostics.QueryPerformanceConfiguration MapPerformanceConfiguration(global::FishMMO.Database.QueryPerformanceConfiguration source)
 		{
 			source ??= new global::FishMMO.Database.QueryPerformanceConfiguration();
-			return new FishMMO.Database.Npgsql.Monitoring.Diagnostics.QueryPerformanceConfiguration
+			return new FishMMO.Database.SqlServer.Monitoring.Diagnostics.QueryPerformanceConfiguration
 			{
 				Enabled = source.Enabled,
 				Level = source.Level,

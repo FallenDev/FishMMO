@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace FishMMO.Database.Npgsql.Monitoring.Diagnostics
+namespace FishMMO.Database.SqlServer.Monitoring.Diagnostics
 {
 	/// <summary>
 	/// Tracks performance metrics for a specific database operation.

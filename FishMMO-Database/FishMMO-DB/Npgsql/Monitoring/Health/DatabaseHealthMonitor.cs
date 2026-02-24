@@ -3,19 +3,19 @@ using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
-namespace FishMMO.Database.Npgsql.Monitoring.Health
+namespace FishMMO.Database.SqlServer.Monitoring.Health
 {
 	/// <summary>
 	/// Monitors database health by performing connectivity checks and measuring response times.
 	/// Thread-safe implementation suitable for Unity headless servers.
 	/// Follows Single Responsibility Principle: solely responsible for database health monitoring.
-	/// Follows Dependency Inversion Principle: depends on INpgsqlDbContextFactory abstraction.
+	/// Follows Dependency Inversion Principle: depends on ISqlServerDbContextFactory abstraction.
 	/// </summary>
 	public sealed class DatabaseHealthMonitor
 	{
-		private readonly INpgsqlDbContextFactory dbContextFactory;
+		private readonly ISqlServerDbContextFactory dbContextFactory;
 		private readonly TimeSpan warningThreshold;
 		private readonly TimeSpan criticalThreshold;
 		private readonly double poolWarningThreshold;
@@ -35,7 +35,7 @@ namespace FishMMO.Database.Npgsql.Monitoring.Health
 		/// <param name="poolCriticalThreshold">Pool utilization critical threshold percentage (default: 85%).</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
 		public DatabaseHealthMonitor(
-			INpgsqlDbContextFactory dbContextFactory,
+			ISqlServerDbContextFactory dbContextFactory,
 			int warningThresholdMs = 100,
 			int criticalThresholdMs = 500,
 			double poolWarningThreshold = 70.0,
@@ -138,7 +138,7 @@ namespace FishMMO.Database.Npgsql.Monitoring.Health
 				result.DatabaseName = connection.Database;
 				result.ServerAddress = connection.DataSource;
 
-				if (connection is NpgsqlConnection npgsqlConnection)
+				if (connection is SqlConnection npgsqlConnection)
 				{
 					result.PoolInfo = GetPoolInfo(npgsqlConnection);
 				}
@@ -165,7 +165,7 @@ namespace FishMMO.Database.Npgsql.Monitoring.Health
 				UpdateLastCheckInfo(result.Status, result.Message);
 				return result;
 			}
-			catch (NpgsqlException ex)
+			catch (SqlException ex)
 			{
 				result.Status = HealthStatus.Unhealthy;
 				result.Message = $"Database connection failed: {ex.Message}";
@@ -231,8 +231,8 @@ namespace FishMMO.Database.Npgsql.Monitoring.Health
 				result.DatabaseName = connection.Database;
 				result.ServerAddress = connection.DataSource;
 
-				// Extract pool info if using Npgsql
-				if (connection is NpgsqlConnection npgsqlConnection)
+				// Extract pool info if using SqlServer
+				if (connection is SqlConnection npgsqlConnection)
 				{
 					result.PoolInfo = GetPoolInfo(npgsqlConnection);
 				}
@@ -274,7 +274,7 @@ namespace FishMMO.Database.Npgsql.Monitoring.Health
 
 				return result;
 			}
-			catch (NpgsqlException ex)
+			catch (SqlException ex)
 			{
 				result.Status = HealthStatus.Unhealthy;
 				result.Message = $"Database connection failed: {ex.Message}";
@@ -330,15 +330,15 @@ namespace FishMMO.Database.Npgsql.Monitoring.Health
 		}
 
 		/// <summary>
-		/// Extracts connection pool information from Npgsql connection.
+		/// Extracts connection pool information from SqlServer connection.
 		/// </summary>
-		/// <param name="connection">The Npgsql connection instance.</param>
+		/// <param name="connection">The SqlServer connection instance.</param>
 		/// <returns>Formatted string containing pool configuration information.</returns>
-		private string GetPoolInfo(NpgsqlConnection connection)
+		private string GetPoolInfo(SqlConnection connection)
 		{
 			try
 			{
-				var builder = new NpgsqlConnectionStringBuilder(connection.ConnectionString);
+				var builder = new SqlConnectionStringBuilder(connection.ConnectionString);
 				return $"Pool: Min={builder.MinPoolSize}, Max={builder.MaxPoolSize}, " +
 					   $"Timeout={builder.Timeout}s, CmdTimeout={builder.CommandTimeout}s";
 			}

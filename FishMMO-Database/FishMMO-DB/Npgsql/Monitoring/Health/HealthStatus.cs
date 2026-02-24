@@ -1,4 +1,4 @@
-namespace FishMMO.Database.Npgsql.Monitoring.Health
+namespace FishMMO.Database.SqlServer.Monitoring.Health
 {
 	/// <summary>
 	/// Represents the health status of a database connection.

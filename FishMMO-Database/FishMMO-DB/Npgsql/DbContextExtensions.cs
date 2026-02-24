@@ -4,15 +4,15 @@ using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using FishMMO.Database.Exceptions;
 
-namespace FishMMO.Database.Npgsql
+namespace FishMMO.Database.SqlServer
 {
 	/// <summary>
-	/// Extension methods for NpgsqlDbContext to provide dynamic table name resolution.
+	/// Extension methods for SqlServerDbContext to provide dynamic table name resolution.
 	/// </summary>
 	public static class DbContextExtensions
 	{
 		/// <summary>
-		/// Compiled regex for validating unquoted PostgreSQL identifiers.
+		/// Compiled regex for validating unquoted SqlServer identifiers.
 		/// Must start with lowercase letter or underscore, followed by lowercase letters, digits, or underscores.
 		/// </summary>
 		private static readonly Regex ValidIdentifierRegex = new Regex(
@@ -49,7 +49,7 @@ namespace FishMMO.Database.Npgsql
 		/// <para><b>Required Usage:</b> Embed the returned identifier into SQL text and use ExecuteSqlRaw/FromSqlRaw with parameter placeholders
 		/// (<c>{0}</c>, <c>{1}</c>, ...) for values. Never build SQL by concatenating untrusted strings.</para>
 		/// </remarks>
-		public static string GetTableName<TEntity>(this NpgsqlDbContext context) where TEntity : class
+		public static string GetTableName<TEntity>(this SqlServerDbContext context) where TEntity : class
 		{
 			if (context == null)
 			{
@@ -82,7 +82,7 @@ namespace FishMMO.Database.Npgsql
 				if (!IsValidUnquotedIdentifier(tableName) || (schema != null && !IsValidUnquotedIdentifier(schema)))
 				{
 					throw new DatabaseException(
-						$"Entity type {typeof(TEntity).Name} resolves to an identifier that cannot be safely represented as an unquoted PostgreSQL identifier. " +
+						$"Entity type {typeof(TEntity).Name} resolves to an identifier that cannot be safely represented as an unquoted SqlServer identifier. " +
 						$"Schema='{schema}', Table='{tableName}'. Ensure schema/table names contain only lowercase letters, digits, and underscores and start with a letter or underscore.",
 						errorCode: "INVALID_CONFIGURATION");
 				}
@@ -94,7 +94,7 @@ namespace FishMMO.Database.Npgsql
 			if (!IsValidUnquotedIdentifier(resolvedSchema))
 			{
 				throw new DatabaseException(
-					$"Entity type {typeof(TEntity).Name} resolves to an identifier that cannot be safely represented as an unquoted PostgreSQL identifier. " +
+					$"Entity type {typeof(TEntity).Name} resolves to an identifier that cannot be safely represented as an unquoted SqlServer identifier. " +
 					$"Schema='{resolvedSchema}', Table='{tableInfo.TableName}'. Ensure schema/table names contain only lowercase letters, digits, and underscores and start with a letter or underscore.",
 					errorCode: "INVALID_CONFIGURATION");
 			}

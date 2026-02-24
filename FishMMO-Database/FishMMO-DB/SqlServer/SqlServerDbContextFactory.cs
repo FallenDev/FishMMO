@@ -2,18 +2,18 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using FishMMO.Database.Npgsql;
-using FishMMO.Database.Npgsql.Monitoring.Diagnostics;
-using FishMMO.Database.Npgsql.Monitoring.Metrics;
+using FishMMO.Database.SqlServer;
+using FishMMO.Database.SqlServer.Monitoring.Diagnostics;
+using FishMMO.Database.SqlServer.Monitoring.Metrics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace FishMMO.Database.SqlServer
 {
 	/// <summary>
-	/// SQL Server-backed implementation of <see cref="INpgsqlDbContextFactory"/>.
+	/// SqlServer-backed implementation of <see cref="ISqlServerDbContextFactory"/>.
 	/// </summary>
-	public sealed class SqlServerDbContextFactory : INpgsqlDbContextFactory
+	public sealed class SqlServerDbContextFactory : ISqlServerDbContextFactory
 	{
 		private const int DisposeWaitTimeoutMs = 5000;
 		private const int ShutdownPollIntervalMs = 50;
@@ -22,7 +22,7 @@ namespace FishMMO.Database.SqlServer
 		private int shutdown;
 		private int activeContextCount;
 		private readonly SqlServerDbConfiguration configuration;
-		private readonly DbContextOptions<NpgsqlDbContext> cachedOptions;
+		private readonly DbContextOptions<SqlServerDbContext> cachedOptions;
 		private readonly ConnectionPoolMetrics poolMetrics;
 		private readonly QueryPerformanceTracker performanceTracker;
 
@@ -36,7 +36,7 @@ namespace FishMMO.Database.SqlServer
 			poolMetrics = new ConnectionPoolMetrics();
 			var connectionMetricsInterceptor = new ConnectionMetricsInterceptor(poolMetrics);
 
-			var optionsBuilder = new DbContextOptionsBuilder<NpgsqlDbContext>()
+			var optionsBuilder = new DbContextOptionsBuilder<SqlServerDbContext>()
 				.UseSqlServer(configuration.ConnectionString, sqlOptions =>
 				{
 					sqlOptions.CommandTimeout(configuration.CommandTimeout);
@@ -57,16 +57,16 @@ namespace FishMMO.Database.SqlServer
 		public RetryPolicyConfiguration RetryPolicy => configuration.RetryPolicy;
 		public int ActiveContextCount => Volatile.Read(ref activeContextCount);
 
-		public NpgsqlDbContext CreateDbContext()
+		public SqlServerDbContext CreateDbContext()
 		{
 			ThrowIfDisposedOrShutdown();
 			Interlocked.Increment(ref activeContextCount);
-			var context = new NpgsqlDbContext(cachedOptions, NpgsqlDbContext.DefaultSchema);
+			var context = new SqlServerDbContext(cachedOptions, SqlServerDbContext.DefaultSchema);
 			context.Disposed += OnContextDisposed;
 			return context;
 		}
 
-		public async Task<NpgsqlDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default)
+		public async Task<SqlServerDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return await Task.FromResult(CreateDbContext()).ConfigureAwait(false);
@@ -143,7 +143,7 @@ namespace FishMMO.Database.SqlServer
 
 		private void OnContextDisposed(object? sender, EventArgs e)
 		{
-			if (sender is NpgsqlDbContext dbContext)
+			if (sender is SqlServerDbContext dbContext)
 				dbContext.Disposed -= OnContextDisposed;
 			Interlocked.Decrement(ref activeContextCount);
 		}

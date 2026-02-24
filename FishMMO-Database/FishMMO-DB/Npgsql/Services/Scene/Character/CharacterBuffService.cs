@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using FishMMO.Database.Data;
 using FishMMO.Database.Exceptions;
-using FishMMO.Database.Npgsql.Entities;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Entities;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <summary>
 	/// Character buff service with async operations, atomic SQL, and DTO pattern.
@@ -24,7 +24,7 @@ namespace FishMMO.Database.Npgsql.Services
 	/// such as connection timeouts, deadlocks, or network interruptions.
 	/// 
 	/// Exception Handling Strategy:
-	/// - Catches specific exceptions (NpgsqlException, DbUpdateException, TimeoutException)
+	/// - Catches specific exceptions (SqlServerException, DbUpdateException, TimeoutException)
 	/// - Converts to custom DatabaseException hierarchy with sanitized messages
 	/// - Returns DatabaseResult for safe, typed error handling
 	/// - Preserves detailed error information for logging while exposing safe messages to clients
@@ -34,8 +34,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <summary>
 		/// Compiled query for retrieving character buffs (hot path for character state).
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<List<CharacterBuffEntity>>> getBuffsQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long characterId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<List<CharacterBuffEntity>>> getBuffsQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long characterId, CancellationToken ct) =>
 				context.CharacterBuffs
 					.AsNoTracking()
 					.Where(b => b.CharacterID == characterId && !b.Deleted)
@@ -46,7 +46,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <param name="dbContextFactory">Factory for creating database contexts.</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
-		public CharacterBuffService(INpgsqlDbContextFactory dbContextFactory) : base(dbContextFactory)
+		public CharacterBuffService(ISqlServerDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}
 

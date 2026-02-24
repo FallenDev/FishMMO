@@ -1,5 +1,5 @@
 ﻿using System;
-using FishMMO.Database.Npgsql.Monitoring.Diagnostics;
+using FishMMO.Database.SqlServer.Monitoring.Diagnostics;
 
 namespace FishMMO.Database
 {
@@ -15,7 +15,7 @@ namespace FishMMO.Database
 		public DatabaseSettings Database { get; set; } = new();
 
 		/// <summary>
-		/// Gets or sets SQL Server connection settings.
+		/// Gets or sets SqlServer connection settings.
 		/// </summary>
 		public SqlServerSettings SqlServer { get; set; } = new();
 
@@ -38,7 +38,7 @@ namespace FishMMO.Database
 	}
 
 	/// <summary>
-	/// SQL Server connection settings.
+	/// SqlServer connection settings.
 	/// </summary>
 	[Serializable]
 	public class SqlServerSettings

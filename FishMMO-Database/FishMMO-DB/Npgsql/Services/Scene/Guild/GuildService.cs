@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using FishMMO.Database.Data;
 using FishMMO.Database.Exceptions;
-using FishMMO.Database.Npgsql.Entities;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Entities;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <inheritdoc/>
 	/// <remarks>
@@ -22,8 +22,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Compiled query for ExistsAsync hot path.
 		/// Pre-compiles the query expression tree for better performance on repeated executions.
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, string, CancellationToken, Task<bool>> guildExistsByNameQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, string nameLowercase, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, string, CancellationToken, Task<bool>> guildExistsByNameQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, string nameLowercase, CancellationToken ct) =>
 				context.Guilds
 					.AsNoTracking()
 					.Any(g => g.NameLowercase == nameLowercase));
@@ -33,8 +33,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// Pre-compiles the query expression tree for better performance on repeated executions.
 		/// </summary>
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<GuildEntity?>> getGuildByIdQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long guildId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<GuildEntity?>> getGuildByIdQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long guildId, CancellationToken ct) =>
 				context.Guilds
 					.AsNoTracking()
 					.FirstOrDefault(g => g.ID == guildId));
@@ -45,7 +45,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <param name="dbContextFactory">DbContext factory for creating contexts.</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
-		public GuildService(INpgsqlDbContextFactory dbContextFactory) : base(dbContextFactory)
+		public GuildService(ISqlServerDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}
 

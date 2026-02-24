@@ -5,11 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using FishMMO.Database.Data;
 using FishMMO.Database.Exceptions;
-using FishMMO.Database.Npgsql.Entities;
-using FishMMO.Database.Npgsql.Services.Interfaces;
+using FishMMO.Database.SqlServer.Entities;
+using FishMMO.Database.SqlServer.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace FishMMO.Database.Npgsql.Services
+namespace FishMMO.Database.SqlServer.Services
 {
 	/// <summary>
 	/// Service for managing character attributes in the database.
@@ -22,8 +22,8 @@ namespace FishMMO.Database.Npgsql.Services
 		/// <summary>
 		/// Compiled query for retrieving character attributes (hot path for character load).
 		/// </summary>
-		private static readonly Func<NpgsqlDbContext, long, CancellationToken, Task<List<CharacterAttributeEntity>>> getAttributesQuery =
-			EF.CompileAsyncQuery((NpgsqlDbContext context, long characterId, CancellationToken ct) =>
+		private static readonly Func<SqlServerDbContext, long, CancellationToken, Task<List<CharacterAttributeEntity>>> getAttributesQuery =
+			EF.CompileAsyncQuery((SqlServerDbContext context, long characterId, CancellationToken ct) =>
 				context.CharacterAttributes
 					.AsNoTracking()
 					.Where(a => a.CharacterID == characterId && !a.Deleted)
@@ -34,7 +34,7 @@ namespace FishMMO.Database.Npgsql.Services
 		/// </summary>
 		/// <param name="dbContextFactory">Factory for creating database contexts.</param>
 		/// <exception cref="ArgumentNullException">Thrown when dbContextFactory is null.</exception>
-		public CharacterAttributeService(INpgsqlDbContextFactory dbContextFactory) : base(dbContextFactory)
+		public CharacterAttributeService(ISqlServerDbContextFactory dbContextFactory) : base(dbContextFactory)
 		{
 		}
 

@@ -2,10 +2,10 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FishMMO.Database.Npgsql
+namespace FishMMO.Database.SqlServer
 {
 	/// <summary>
-	/// Core factory interface for creating NpgsqlDbContext instances.
+	/// Core factory interface for creating SqlServerDbContext instances.
 	/// Implementations must be thread-safe and create new contexts per call.
 	/// DbContext instances are short-lived and should not be pooled.
 	/// </summary>
@@ -20,16 +20,16 @@ namespace FishMMO.Database.Npgsql
 		/// Creates a new DbContext instance.
 		/// Each call creates a fresh context - safe for concurrent use.
 		/// </summary>
-		/// <returns>A new NpgsqlDbContext instance.</returns>
-		NpgsqlDbContext CreateDbContext();
+		/// <returns>A new SqlServerDbContext instance.</returns>
+		SqlServerDbContext CreateDbContext();
 
 		/// <summary>
 		/// Asynchronously creates a new DbContext instance.
 		/// Each call creates a fresh context - safe for concurrent use.
 		/// </summary>
 		/// <param name="cancellationToken">Cancellation token.</param>
-		/// <returns>A new NpgsqlDbContext instance.</returns>
-		Task<NpgsqlDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default);
+		/// <returns>A new SqlServerDbContext instance.</returns>
+		Task<SqlServerDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Shuts down the factory and rejects new DbContext creation.

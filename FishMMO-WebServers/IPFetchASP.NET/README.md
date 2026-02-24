@@ -2,7 +2,7 @@
 
 ## Overview
 
-ASP.NET Core Web API that provides login server IP address discovery for FishMMO clients. Unity clients query this service to obtain the list of active login servers before connecting. The server reads login server records from PostgreSQL, caches results in memory, and gates access through a custom middleware that rejects non-FishMMO requests.
+ASP.NET Core Web API that provides login server IP address discovery for FishMMO clients. Unity clients query this service to obtain the list of active login servers before connecting. The server reads login server records from SQL Server, caches results in memory, and gates access through a custom middleware that rejects non-FishMMO requests.
 
 Designed to run behind NGINX as a reverse proxy (via `api.fishmmo.com`). NGINX terminates SSL and forwards requests over plain HTTP to Kestrel on localhost.
 
@@ -22,7 +22,7 @@ Unity Client
 |  +-- CORS (AllowXFishMMO)              |
 |  +-- UnityOnlyMiddleware               |
 |  +-- LoginServerController             |
-|       +-- PostgreSQL (via Npgsql)      |
+|       +-- SQL Server (via SqlServer)      |
 |       +-- MemoryCache (300s TTL)       |
 +-----------------------------------------+
 ```
@@ -53,7 +53,7 @@ IpFetchServer/
 
 Returns JSON array of active login servers with `Address` and `Port` fields.
 
-**Caching:** Results are cached in `IMemoryCache` for 300 seconds (5 minutes). Cache miss triggers a PostgreSQL query via `NpgsqlDbContext.LoginServers`.
+**Caching:** Results are cached in `IMemoryCache` for 300 seconds (5 minutes). Cache miss triggers a SQL Server query via `SqlServerDbContext.LoginServers`.
 
 **Response Codes:**
 
@@ -86,7 +86,7 @@ Example `appsettings.Development.json` (kept out of source control in most setup
 ```json
 {
   "ConnectionStrings": {
-    "NpgsqlConnection": "Host=localhost;Port=5432;Database=fishmmo_dev;Username=devuser;Password=devpass;"
+    "SqlServerConnection": "Server=localhost,1433;Database=fishmmo_dev;User ID=devuser;Password=devpass;TrustServerCertificate=True;Encrypt=True;"
   },
   "WebServer": {
     "HttpPort": 8080
@@ -100,7 +100,7 @@ Recommendations:
 - To set the connection string via environment variables, use the double-underscore form to map to nested keys. For example:
 
 ```
-export ConnectionStrings__NpgsqlConnection="Host=...;Port=5432;Database=...;Username=...;Password=...;"
+export ConnectionStrings__SqlServerConnection="Server=localhost,1433;Database=...;User ID=...;Password=...;TrustServerCertificate=True;Encrypt=True;"
 ```
 
 - The application will also pick up `WebServer:HttpPort` from configuration or environment variables. For example:
@@ -120,12 +120,12 @@ export WebServer__HttpPort=8080
 
 ## External Dependencies
 
-- **Npgsql / Entity Framework Core** - PostgreSQL access via `NpgsqlDbContextFactory`.
+- **SqlServer / Entity Framework Core** - SQL Server access via `SqlServerDbContextFactory`.
 - **Microsoft.Extensions.Caching.Memory** - in-memory caching for login server list.
 - **FishMMO.Logging** - structured async logging.
 
 ## Requirements
 
 - .NET 8.0 SDK or later
-- PostgreSQL database with `LoginServers` table
+- SQL Server database with `LoginServers` table
 - NGINX reverse proxy (recommended for production)

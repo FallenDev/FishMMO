@@ -165,7 +165,7 @@ Complete server integration:
 using UnityEngine;
 using FishMMO.Database;
 using FishMMO.Server.Database;
-using FishMMO.Database.Npgsql.Monitoring.Health;
+using FishMMO.Database.SqlServer.Monitoring.Health;
 using Microsoft.Extensions.Configuration;
 
 public class GameServerManager : MonoBehaviour
@@ -258,7 +258,7 @@ public class GameServerManager : MonoBehaviour
 
 **Pool Always Shows "Unknown"**
 - Ensure database is properly initialized
-- Verify DbContextFactory is of type `NpgsqlDbContextFactory`
+- Verify DbContextFactory is of type `SqlServerDbContextFactory`
 - Check that pool metrics are being tracked
 
 **Metrics Not Updating**
@@ -282,4 +282,4 @@ public class GameServerManager : MonoBehaviour
 
 - [POOL_HEALTH_MONITORING.md](../POOL_HEALTH_MONITORING.md) - Connection pool details
 - [Database.cs](../Database.cs) - Main database orchestrator
-- [DatabaseHealthMonitor.cs](../Npgsql/Monitoring/Health/DatabaseHealthMonitor.cs) - Core health check logic
+- `DatabaseHealthMonitor.cs` (SQL Server monitor namespace) - Core health check logic

@@ -1,4 +1,4 @@
-namespace FishMMO.Database.Npgsql.Monitoring.Diagnostics
+namespace FishMMO.Database.SqlServer.Monitoring.Diagnostics
 {
 	/// <summary>
 	/// Configuration for query performance tracking.

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using FishMMO.Database.Data;
 using FishMMO.Database.Data.Enums;
 
-namespace FishMMO.Database.Npgsql.Services.Interfaces
+namespace FishMMO.Database.SqlServer.Services.Interfaces
 {
 	/// <summary>
 	/// Service interface for chat message operations.

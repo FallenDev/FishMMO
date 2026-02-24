@@ -1,5 +1,5 @@
 
-namespace FishMMO.Database.Npgsql.Entities
+namespace FishMMO.Database.SqlServer.Entities
 {
 	public interface IVersionedEntity
 	{

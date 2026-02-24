@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using FishMMO.Database.Data.Enums;
 
-namespace FishMMO.Database.Npgsql.Entities
+namespace FishMMO.Database.SqlServer.Entities
 {
 	/// <summary>
 	/// Database entity representing a player character.
@@ -13,7 +13,7 @@ namespace FishMMO.Database.Npgsql.Entities
 		public long Version { get; set; }
 		/// <remarks>
 		/// [COLLATE NOCASE for case insensitive compare. this way we can't both create 'Archer' and 'archer' as characters]
-		/// note: the collation has been added in the DbContext OnModelCreating function since the Postgres provider
+		/// note: the collation has been added in the DbContext OnModelCreating function since the SqlServer provider
 		/// doesn't support collations via attributes
 		/// </remarks>
 		public string Name { get; set; }
