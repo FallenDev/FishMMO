@@ -240,7 +240,7 @@ namespace FishMMO.Installer
 			const string outputDir = "SqlServerMigrations";
 
 			return await RunDotNetCommandAsync(
-				$"ef migrations add {migrationName} -o {outputDir} -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
+				$"ef migrations add {migrationName} --framework net10.0 -o {outputDir} -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
 		}
 
 
@@ -255,7 +255,7 @@ namespace FishMMO.Installer
 			string resolvedOutputPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), outputFilePath));
 
 			bool success = await RunDotNetCommandAsync(
-				$"ef migrations script --idempotent -o \"{resolvedOutputPath}\" -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
+				$"ef migrations script --framework net10.0 --idempotent -o \"{resolvedOutputPath}\" -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
 
 			if (success)
 			{
@@ -274,7 +274,7 @@ namespace FishMMO.Installer
 			const string providerArg = "SqlServer";
 
 			return await RunDotNetCommandAsync(
-				$"ef database update -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
+				$"ef database update --framework net10.0 -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
 		}
 	}
 }
