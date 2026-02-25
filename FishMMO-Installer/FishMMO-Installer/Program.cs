@@ -34,16 +34,49 @@ namespace FishMMO.Installer
 		{
 			try
 			{
-				IConfiguration configuration = DatabaseConfigurationHelper.BuildDesignTimeConfiguration();
+				IConfiguration configuration = BuildInstallerConfiguration(environmentName);
 				appSettings = configuration.Get<AppSettings>() ?? new AppSettings();
 				appSettings.Database.Provider = nameof(DatabaseProvider.SqlServer);
-				InstallerProcessHelper.Log($"Configuration successfully loaded for Environment: {environmentName}");
+				InstallerProcessHelper.Log($"Configuration successfully loaded for Environment: {environmentName}. SqlServer='{appSettings.SqlServer.Server}', Database='{appSettings.SqlServer.Database}', Username='{appSettings.SqlServer.Username}'.");
 			}
 			catch (Exception ex)
 			{
 				InstallerProcessHelper.Log($"Critical error loading configuration: {ex.Message}");
 				appSettings = new AppSettings();
 			}
+		}
+
+		private static IConfiguration BuildInstallerConfiguration(string environmentName)
+		{
+			string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+			string currentDirectory = Directory.GetCurrentDirectory();
+
+			string[] candidateBasePaths =
+			[
+				currentDirectory,
+				baseDirectory,
+				Path.Combine(baseDirectory, "FishMMO-Database", "FishMMO-DB"),
+				Path.Combine(currentDirectory, "FishMMO-Database", "FishMMO-DB")
+			];
+
+			string? selectedBasePath = candidateBasePaths
+				.Select(Path.GetFullPath)
+				.FirstOrDefault(path => File.Exists(Path.Combine(path, "appsettings.json")));
+
+			if (string.IsNullOrWhiteSpace(selectedBasePath))
+			{
+				throw new FileNotFoundException(
+					"Could not locate appsettings.json. Place it in the working directory, installer output directory, or FishMMO-Database/FishMMO-DB.");
+			}
+
+			InstallerProcessHelper.Log($"Using configuration files from '{selectedBasePath}'.");
+
+			return new ConfigurationBuilder()
+				.SetBasePath(selectedBasePath)
+				.AddJsonFile("appsettings.json", optional: false)
+				.AddJsonFile($"appsettings.{environmentName}.json", optional: true)
+				.AddEnvironmentVariables()
+				.Build();
 		}
 
 		private static async Task RunMenuLoop()
@@ -61,7 +94,7 @@ namespace FishMMO.Installer
 				Console.WriteLine("6 : Install NGINX (Web Server/Reverse Proxy)");
 				Console.WriteLine("7 : Install/Renew Let's Encrypt Certificate (NGINX)");
 				Console.WriteLine("8 : Validate SqlServer connectivity");
-				Console.WriteLine("9 : Provision FishMMO SqlServer Database");
+				Console.WriteLine("9 : Generate FishMMO SqlServer provisioning SQL script");
 				Console.WriteLine("A : Create new database migration");
 				Console.WriteLine("B : Apply pending migrations");
 				Console.WriteLine("0 : Quit");
