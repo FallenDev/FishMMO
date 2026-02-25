@@ -85,7 +85,7 @@ namespace FishMMO.Installer
 			{
 				Console.Clear();
 				Console.WriteLine("Welcome to the FishMMO Installer Tool (SqlServer mode).");
-				Console.WriteLine("Press a key (0-9, A-B):");
+				Console.WriteLine("Press a key (0-9, A):");
 				Console.WriteLine("1 : Install DotNet");
 				Console.WriteLine("2 : Install Visual Studio Build Tools (Windows Only)");
 				Console.WriteLine("3 : Build all C# Projects");
@@ -95,8 +95,7 @@ namespace FishMMO.Installer
 				Console.WriteLine("7 : Install/Renew Let's Encrypt Certificate (NGINX)");
 				Console.WriteLine("8 : Validate SqlServer connectivity");
 				Console.WriteLine("9 : Generate FishMMO SqlServer provisioning SQL script");
-				Console.WriteLine("A : Create new database migration");
-				Console.WriteLine("B : Apply pending migrations");
+				Console.WriteLine("A : Generate database migration SQL script");
 				Console.WriteLine("0 : Quit");
 
 				ConsoleKeyInfo key = Console.ReadKey(true);
@@ -132,9 +131,6 @@ namespace FishMMO.Installer
 					case ConsoleKey.A:
 						await CreateMigration();
 						break;
-					case ConsoleKey.B:
-						await ApplyMigrations();
-						break;
 					case ConsoleKey.D0:
 						return;
 					default:
@@ -149,27 +145,18 @@ namespace FishMMO.Installer
 
 		private static async Task CreateMigration()
 		{
-			string? migrationName = InstallerProcessHelper.PromptForInput("Enter a name for the new migration (e.g., 'AddPlayerInventory'): ");
-			if (string.IsNullOrWhiteSpace(migrationName))
+			string defaultFileName = $"fishmmo_migrations_{DateTime.UtcNow:yyyyMMdd_HHmmss}.sql";
+			string? outputFileName = InstallerProcessHelper.PromptForInput($"Enter SQL script filename (default: {defaultFileName}): ");
+			string finalFileName = string.IsNullOrWhiteSpace(outputFileName) ? defaultFileName : outputFileName.Trim();
+
+			bool scriptSuccess = await DotNetInstaller.RunEFMigrationScriptAsync(finalFileName);
+			if (!scriptSuccess)
 			{
-				InstallerProcessHelper.Log("Migration name cannot be empty.");
+				InstallerProcessHelper.Log($"Failed to generate migration SQL script '{finalFileName}'.");
 				return;
 			}
 
-			bool migrationSuccess = await DotNetInstaller.RunEFMigrationAsync(migrationName);
-			if (!migrationSuccess)
-			{
-				InstallerProcessHelper.Log($"Failed to create migration '{migrationName}'.");
-				return;
-			}
-
-			InstallerProcessHelper.Log($"Migration '{migrationName}' created successfully.");
-		}
-
-		private static async Task ApplyMigrations()
-		{
-			bool updateSuccess = await DotNetInstaller.RunEFDatabaseUpdateAsync();
-			InstallerProcessHelper.Log(updateSuccess ? "Migrations applied successfully." : "Failed to apply migrations.");
+			InstallerProcessHelper.Log($"Migration SQL script '{finalFileName}' generated successfully.");
 		}
 
 		private static async Task HandleWithSettings(
