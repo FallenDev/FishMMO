@@ -32,7 +32,9 @@ namespace FishMMO.Database.SqlServer.Entities
 				.HasMaxLength(255);
 
 			builder.Property(e => e.Port)
-				.IsRequired();
+				.IsRequired()
+				.HasConversion<int>()
+				.HasColumnType("int");
 
 			builder.Property(e => e.CharacterCount)
 				.IsRequired()

@@ -31,6 +31,8 @@ namespace FishMMO.Database.SqlServer.Entities
 
 			builder.Property(e => e.Value)
 				.IsRequired()
+				.HasConversion<long>()
+				.HasColumnType("bigint")
 				.HasDefaultValue(0u);
 
 			// Unique constraint: one achievement template per character

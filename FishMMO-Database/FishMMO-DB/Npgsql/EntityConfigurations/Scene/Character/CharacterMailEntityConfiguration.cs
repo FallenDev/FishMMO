@@ -43,7 +43,9 @@ namespace FishMMO.Database.SqlServer.Entities
 
 			builder.Property(e => e.ItemAttachmentAmount)
 				.IsRequired()
-				.HasDefaultValue(0);
+				.HasConversion<long>()
+				.HasColumnType("bigint")
+				.HasDefaultValue(0u);
 
 			// Performance index for character mail queries (hot path)
 			builder.HasIndex(e => e.CharacterID);

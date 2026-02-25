@@ -1,4 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FishMMO.Database.SqlServer.Entities
@@ -25,9 +30,21 @@ namespace FishMMO.Database.SqlServer.Entities
 			builder.Property(e => e.TemplateID)
 				.IsRequired();
 
+			var listComparer = new ValueComparer<List<int>>(
+				(left, right) => (left ?? new List<int>()).SequenceEqual(right ?? new List<int>()),
+				list => (list ?? new List<int>()).Aggregate(0, (current, value) => HashCode.Combine(current, value)),
+				list => list == null ? new List<int>() : list.ToList());
+
 			builder.Property(e => e.AbilityEvents)
 				.IsRequired()
-				.HasDefaultValue(new System.Collections.Generic.List<int>());
+				.HasConversion(
+					list => JsonSerializer.Serialize(list ?? new List<int>(), (JsonSerializerOptions?)null),
+					json => JsonSerializer.Deserialize<List<int>>(json, (JsonSerializerOptions?)null) ?? new List<int>())
+				.Metadata.SetValueComparer(listComparer);
+
+			builder.Property(e => e.AbilityEvents)
+				.HasColumnType("nvarchar(max)")
+				.HasDefaultValue(new List<int>());
 
 			builder.Property(e => e.Cooldown)
 				.IsRequired()

@@ -34,6 +34,8 @@ namespace FishMMO.Database.SqlServer.Entities
 
 			builder.Property(e => e.Amount)
 				.IsRequired()
+				.HasConversion<long>()
+				.HasColumnType("bigint")
 				.HasDefaultValue(1u);
 
 			// Unique constraint: one item per slot per character
