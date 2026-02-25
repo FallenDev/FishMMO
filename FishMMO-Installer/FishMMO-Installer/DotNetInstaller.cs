@@ -243,6 +243,28 @@ namespace FishMMO.Installer
 				$"ef migrations add {migrationName} -o {outputDir} -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
 		}
 
+
+		/// <summary>
+		/// Generates an idempotent SQL script for applying pending EF Core migrations.
+		/// </summary>
+		/// <param name="outputFilePath">Relative or absolute output file path for the generated SQL script.</param>
+		/// <returns>True if the command succeeded, otherwise false.</returns>
+		public static async Task<bool> RunEFMigrationScriptAsync(string outputFilePath, DatabaseProvider provider = DatabaseProvider.SqlServer)
+		{
+			const string providerArg = "SqlServer";
+			string resolvedOutputPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), outputFilePath));
+
+			bool success = await RunDotNetCommandAsync(
+				$"ef migrations script --idempotent -o \"{resolvedOutputPath}\" -p \"{InstallationConstants.ProjectPath}\" -s \"{InstallationConstants.StartupProject}\" -- --Database:Provider={providerArg}");
+
+			if (success)
+			{
+				InstallerProcessHelper.Log($"EF migration SQL script written to '{resolvedOutputPath}'.");
+			}
+
+			return success;
+		}
+
 		/// <summary>
 		/// Runs a dotnet ef database update command to apply pending migrations.
 		/// </summary>
