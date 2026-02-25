@@ -94,7 +94,7 @@ namespace FishMMO.Installer
 				Console.WriteLine("6 : Install NGINX (Web Server/Reverse Proxy)");
 				Console.WriteLine("7 : Install/Renew Let's Encrypt Certificate (NGINX)");
 				Console.WriteLine("8 : Validate SqlServer connectivity");
-				Console.WriteLine("9 : Provision FishMMO SqlServer Database");
+				Console.WriteLine("9 : Generate FishMMO SqlServer provisioning SQL script");
 				Console.WriteLine("A : Create new database migration");
 				Console.WriteLine("B : Apply pending migrations");
 				Console.WriteLine("0 : Quit");
